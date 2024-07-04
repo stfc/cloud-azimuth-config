@@ -3,5 +3,9 @@
 .venv
 .work
 .python-version
-/clouds.yaml*
+*clouds.yaml*
 tilt-settings.yaml
+tls/
+secrets.yaml
+secrets.yml
+
