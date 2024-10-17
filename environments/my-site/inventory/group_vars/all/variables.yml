@@ -1,24 +1,32 @@
 #####
 # ansible collections
 #####
+### workstation
+azimuth_caas_stackhpc_workstation_extra_vars_overrides:
+  ansible_init_collections:
+    - name: https://github.com/stfc/cloud-image-builders.git
+      version: "3b0e9b3"
+      type: git
+  ansible_init_playbooks:
+    - name: azimuth.security.run_vm_baseline
 
+### r studio
+azimuth_caas_stackhpc_rstudio_extra_vars_overrides:
+  ansible_init_collections:
+    - name: https://github.com/stfc/cloud-image-builders.git
+      version: "3b0e9b3"
+      type: git
+  ansible_init_playbooks:
+    - name: azimuth.security.run_vm_baseline
 
-# azimuth_caas_stackhpc_workstation_extra_vars_overrides:
-#   ansible_init_default_playbooks:
-#     - name: vendor1.collection1.playbook1
-#     - name: vendor1.collection1.playbook2
-#       stage: pre
-#     - name: vendor2.collection2.playbook1
-
-#   ansible_init_default_collections:
-#     - type: git
-#       name: https://github.com/vendor1/ansible-collection1.git
-#       version: 0.1.0
-#     - type: galaxy
-#       name: vendor2.collection2
-#       version: 0.2.0  
-#       source: the_fountain_of_youth
-
+### repo2docker
+azimuth_caas_stackhpc_repo2docker_extra_vars_overrides:
+  ansible_init_collections:
+    - name: https://github.com/stfc/cloud-image-builders.git
+      version: "3b0e9b3"
+      type: git
+  ansible_init_playbooks:
+    - name: azimuth.security.run_vm_baseline
 
 
 #####
@@ -64,6 +72,9 @@ infra_flavor_id: "f120e108-7883-4933-bb76-4f88909447f6"  # l6.c4 (4 vCPU, ~15GB 
 # The size in GB for the data volume
 # This will hold all cluster data, including Kubernetes resources, and also PVC data
 infra_data_volume_size: 100
+
+#   If larger than zero, project specific manila share should be auto-created
+# azimuth_openstack_manila_project_share_gb: 1
 
 #####
 # Configuration for the HA cluster
@@ -138,8 +149,7 @@ ingress_base_domain: "apps.cape.stfc.ac.uk"
 # ingress_base_domain: >-
 #   apps.{{ capi_cluster_addons_ingress_load_balancer_ip | replace('.', '-') }}.sslip.io
 
-# Disable TLS until a wildcard cert (or internet facing for LE) is sorted
-# WARNING - DO NOT GO INTO PRODUCTION WITH THIS
+
 ingress_tls_enabled: true
 
 # Indicates if cert-manager should be enabled
@@ -167,6 +177,9 @@ azimuth_current_cloud_label: My Cloud
 # Use the STFC domain for now
 azimuth_openstack_domain: stfc
 
+azimuth_openstack_auth_url: https://openstack.stfc.ac.uk:5000/v3
+
+
 #####
 # Configuration of authenticators / authentication methods
 #####
@@ -180,11 +193,17 @@ azimuth_authenticator_appcred_enabled: false
 # The label for the appcred authenticator
 azimuth_authenticator_appcred_label: "Application Credential"
 
-# Whether the federated authenticator should be enabled (not enabled by default)
-azimuth_authenticator_federated_enabled: false
-# The label for the federated authenticator
-azimuth_authenticator_federated_label: "Federated"
-# The provider for the federated authenticator
-# This should correspond to the Keystone federation URL, e.g. <auth url>/auth/OS-FEDERATION/websso/<provider>
-azimuth_authenticator_federated_provider: oidc
+
+azimuth_authenticator_federated_enabled: yes
+azimuth_authenticator_federated_provider: "openid"
+azimuth_authenticator_federated_protocol: "openid"
+
+# # Whether the federated authenticator should be enabled (not enabled by default)
+# azimuth_authenticator_federated_enabled: false
+# # The label for the federated authenticator
+# azimuth_authenticator_federated_label: "Federated"
+# # The provider for the federated authenticator
+# # This should correspond to the Keystone federation URL, e.g. <auth url>/auth/OS-FEDERATION/websso/<provider>
+# azimuth_authenticator_federated_provider: oidc
+# # azimuth_authenticator_federated_provider: https://openstack.stfc.ac.uk:5000/v3/auth/OS-FEDERATION/identity_providers/openid/protocols/openid/websso?origin=https://openstack.stfc.ac.uk/auth/websso/
 
