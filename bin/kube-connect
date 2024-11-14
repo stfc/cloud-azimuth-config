@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 #####
-## This script uses Tilt (tilt.dev) to allow easier code development on the
-## currently activated environment
+## This script allows access to the Azimuth Kubernetes cluster from the machine
+## where the script is executed by using a SOCKS proxy
 #####
 
 set -eo pipefail

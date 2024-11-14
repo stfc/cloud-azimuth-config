@@ -159,6 +159,14 @@ harbor_admin_password: "<secure password>"
 harbor_secret_key: "<secure secret key>"
 ```
 
+!!! tip
+
+    `azimuth-config` includes a utility for generating secrets for an environment:
+
+    ```sh
+    ./bin/generate-secrets [--force] <environment-name>
+    ```
+
 !!! danger
 
     These values should be kept secret. If you want to keep them in Git - which is recommended -

@@ -70,6 +70,10 @@ export OS_CLIENT_CONFIG_FILE=/path/to/clouds.yaml
 # with other deployments that use the dev environment
 source ./bin/activate dev jbloggs-dev
 
+# Generate secrets locally for the active environment, if required
+# DO NOT COMMIT THE GENERATED FILE TO GIT
+./bin/generate-secrets
+
 # Install Azimuth as usual
 ansible-galaxy install -f -r requirements.yml
 ansible-playbook azimuth_cloud.azimuth_ops.provision

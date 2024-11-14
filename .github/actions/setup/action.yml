@@ -107,6 +107,14 @@ runs:
         source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
         ansible-galaxy install -f -r requirements.yml
 
+    - name: Generate secrets for environment
+      shell: bash
+      run: |
+        set -e
+        source ci.env
+        source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
+        ./bin/generate-secrets
+
     # Generate and append the S3 credential to the CI environment file
     - name: Configure S3 lock
       id: s3-lock-config

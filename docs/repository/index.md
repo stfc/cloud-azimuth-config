@@ -54,13 +54,25 @@ to do this is to copy the `example` environment as a starting point:
 cp -r ./environments/example ./environments/my-site
 ```
 
-!!! tip
+!!! tip  "Copy instead of rename"
 
     Copying the `example` environment, rather than just renaming it, avoids conflicts
     when synchronising changes from the `azimuth-config` repository where the `example`
     environment has changed.
 
 Once you have your new environment, you can make the required changes for your site.
+
+!!! tip  "Generating secrets"
+
+    `azimuth-config` includes a utility that can be used to generate secrets for your
+    environment:
+
+    ```sh
+    ./bin/generate-secrets --force my-site
+    ```
+
+    `--force` is required because the `example` environment includes an example secrets
+    file that we want to overwrite with the generated secrets.
 
 As you make changes to your environment, remember to commit and push them regularly:
 
