@@ -266,12 +266,13 @@ generate_tests_caas_test_case_{cluster_type}_verify_timeout: "45 minutes"
 
 !!! tip  "Coerce a value to something other than a string"
 
-    By default  Robot Framework coerces values to strings. Robot Framework can be instructed to treat
-    the value literally using the syntax "${x}", for example:
+    By default, Robot Framework coerces values to strings. Robot Framework can be instructed to
+    treat the value literally using the syntax `${x}`, e.g.:
 
     ```yaml  title="environments/my-site/inventory/group_vars/all/tests.yml"
-    # Make Robot Framework treat the override as an integer, not a string
+    # Make Robot Framework treat the variable as an integer, not a string
     generate_tests_caas_test_case_{cluster_type}_param_{parameter_name}: "${42}"
+    ```
  
 !!! warning
 
