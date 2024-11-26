@@ -170,9 +170,9 @@ azimuth_kubernetes_enabled: yes
 azimuth_clusters_enabled: yes
 
 # The name of the current cloud
-azimuth_current_cloud_name: my-cloud
+azimuth_current_cloud_name: STFC Cloud
 # The label for the current cloud
-azimuth_current_cloud_label: My Cloud
+azimuth_current_cloud_label: STFC Cloud
 
 # Use the STFC domain for now
 azimuth_openstack_domain: stfc
