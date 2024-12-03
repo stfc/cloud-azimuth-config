@@ -80,7 +80,7 @@ infra_data_volume_size: 100
 # The Kubernetes version that will be used for the HA cluster
 #   N.B. This is populated automatically using community images by default
 # capi_cluster_kubernetes_version: ""
-# capi_cluster_kubernetes_version: 1.28.7
+capi_cluster_kubernetes_version: 1.29.10
 # The ID of the image that will be used for the nodes of the HA clu3\ster
 #   N.B. This is populated automatically using community images by default
 # capi_cluster_machine_image_id: "0074f426-8fd8-45dd-820a-4927aec5fbd9"
@@ -209,7 +209,7 @@ community_images_azimuth_images_version: 0.15.0
 
 # Workstation
 azimuth_caas_stackhpc_workstation_git_url: https://github.com/azimuth-cloud/caas-workstation.git
-azimuth_caas_stackhpc_workstation_git_version: 0.8.1
+azimuth_caas_stackhpc_workstation_git_version: 0.10.0
 
 # R-Studio
 azimuth_caas_stackhpc_rstudio_git_url: https://github.com/azimuth-cloud/caas-r-studio-server
