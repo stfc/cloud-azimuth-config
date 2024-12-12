@@ -46,6 +46,10 @@ source ./bin/activate demo
 # Install Ansible dependencies
 ansible-galaxy install -f -r requirements.yml
 
+# Generate deployment secrets
+# N.B. for the demo environment, these are excluded from git using .gitignore
+./bin/generate-secrets
+
 # Deploy Azimuth
 ansible-playbook azimuth_cloud.azimuth_ops.provision
 ```

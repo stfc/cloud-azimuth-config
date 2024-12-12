@@ -1,6 +1,6 @@
-#####
+#############################################################################
 # ansible collections
-#####
+
 ### workstation
 azimuth_caas_stackhpc_workstation_extra_vars_overrides:
   ansible_init_collections:
@@ -28,17 +28,15 @@ azimuth_caas_stackhpc_repo2docker_extra_vars_overrides:
   ansible_init_playbooks:
     - name: azimuth.security.run_vm_baseline
 
-
-#####
+#############################################################################
 # Images configuration
-#####
+
 community_images_custom_properties:
   - "hw_scsi_model=virtio-scsi"
   - "hw_disk_bus=scsi"
 
-#####
+#############################################################################
 # Configuration for the seed node (HA) or single node
-#####
 
 # The ID of an existing network to create the node on
 #infra_network_id: "5be315b7-7ebd-4254-97fe-18c1df501538"
@@ -76,17 +74,16 @@ infra_data_volume_size: 100
 #   If larger than zero, project specific manila share should be auto-created
 # azimuth_openstack_manila_project_share_gb: 1
 
-#####
+#############################################################################
 # Configuration for the HA cluster
-#####
 
 # The Kubernetes version that will be used for the HA cluster
 #   N.B. This is populated automatically using community images by default
 # capi_cluster_kubernetes_version: ""
-# capi_cluster_kubernetes_version: 1.28.7
+capi_cluster_kubernetes_version: 1.30.6
 # The ID of the image that will be used for the nodes of the HA clu3\ster
 #   N.B. This is populated automatically using community images by default
-# capi_cluster_machine_image_id: "<image id>"
+# capi_cluster_machine_image_id: "0074f426-8fd8-45dd-820a-4927aec5fbd9"
 # The name of the flavor to use for control plane nodes
 capi_cluster_control_plane_flavor: "l6.c4"  # 4 vCPU, ~15GB RAM, 75GB disk
 # The name of the flavor to use for worker nodes
@@ -139,29 +136,27 @@ capi_cluster_registry_mirrors:
     - https://dockerhub.stfc.ac.uk
 azimuth_capi_operator_capi_helm_registry_mirrors: "{{ capi_cluster_registry_mirrors }}"
 
-
-#####
+#############################################################################
 # Ingress configuration
-#####
+
 # The base domain to use for ingress resources
 ingress_base_domain: "apps.cape.stfc.ac.uk"
 # Use an SSLIP domain until DNS wildcard record is sorted
 # ingress_base_domain: >-
 #   apps.{{ capi_cluster_addons_ingress_load_balancer_ip | replace('.', '-') }}.sslip.io
 
-
 ingress_tls_enabled: true
 
 # Indicates if cert-manager should be enabled
-# Currently, TLS is enabled for ingress iff cert-manager is enabled
+# Currently, TLS is enabled for ingress if cert-manager is enabled
 certmanager_enabled: no
 
 # Indicates if Harbor should be enabled to provide pull-through caches
 harbor_enabled: no
 
-#####
+#############################################################################
 # Azimuth configuration
-#####
+
 # Indicates if the Zenith app proxy should be enabled
 azimuth_apps_enabled: yes
 # Indicates if Kubernetes support should be enabled
@@ -170,19 +165,18 @@ azimuth_kubernetes_enabled: yes
 azimuth_clusters_enabled: yes
 
 # The name of the current cloud
-azimuth_current_cloud_name: my-cloud
+azimuth_current_cloud_name: STFC Cloud
 # The label for the current cloud
-azimuth_current_cloud_label: My Cloud
+azimuth_current_cloud_label: STFC Cloud
+
+#############################################################################
+# Configuration of authenticators / authentication methods
 
 # Use the STFC domain for now
 azimuth_openstack_domain: stfc
 
 azimuth_openstack_auth_url: https://openstack.stfc.ac.uk:5000/v3
 
-
-#####
-# Configuration of authenticators / authentication methods
-#####
 # Whether the password authenticator should be enabled (enabled by default)
 azimuth_authenticator_password_enabled: true
 # The label for the password authenticator
@@ -192,7 +186,6 @@ azimuth_authenticator_password_label: "Username + Password"
 azimuth_authenticator_appcred_enabled: false
 # The label for the appcred authenticator
 azimuth_authenticator_appcred_label: "Application Credential"
-
 
 azimuth_authenticator_federated_enabled: yes
 azimuth_authenticator_federated_provider: "openid"
@@ -206,4 +199,27 @@ azimuth_authenticator_federated_protocol: "openid"
 # # This should correspond to the Keystone federation URL, e.g. <auth url>/auth/OS-FEDERATION/websso/<provider>
 # azimuth_authenticator_federated_provider: oidc
 # # azimuth_authenticator_federated_provider: https://openstack.stfc.ac.uk:5000/v3/auth/OS-FEDERATION/identity_providers/openid/protocols/openid/websso?origin=https://openstack.stfc.ac.uk/auth/websso/
+
+#############################################################################
+# Azimuth repos
+
+# Azimuth-images
+community_images_azimuth_images_repo: https://github.com/azimuth-cloud/azimuth-images
+community_images_azimuth_images_version: 0.15.0
+
+# Workstation
+azimuth_caas_stackhpc_workstation_git_url: https://github.com/azimuth-cloud/caas-workstation.git
+azimuth_caas_stackhpc_workstation_git_version: 0.9.0
+
+# R-Studio
+azimuth_caas_stackhpc_rstudio_git_url: https://github.com/azimuth-cloud/caas-r-studio-server
+azimuth_caas_stackhpc_rstudio_git_version: 0.7.0
+
+# Repo2docker 
+azimuth_caas_stackhpc_repo2docker_git_url: https://github.com/azimuth-cloud/caas-repo2docker.git
+azimuth_caas_stackhpc_repo2docker_git_version: 0.7.0
+
+# SLURM
+azimuth_caas_stackhpc_slurm_appliance_git_url: https://github.com/stackhpc/ansible-slurm-appliance.git
+azimuth_caas_stackhpc_slurm_appliance_git_version: v1.155
 

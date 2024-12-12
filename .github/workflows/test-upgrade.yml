@@ -45,6 +45,30 @@ jobs:
           target-cloud: ${{ inputs.target-cloud || vars.TARGET_CLOUD }}
           install-mode: ha
           environment-prefix: ci-upgrade
+          # For Kubernetes, generate a single named test that can be referenced after the upgrade
+          extra-vars: |
+            upgrade_test_kubernetes_latest_available_version: >-
+              {{-
+                generate_tests_installed_kubernetes_templates |
+                  map(attribute = 'spec.values.kubernetesVersion') |
+                  community.general.version_sort(reverse = True) |
+                  first
+              }}
+            upgrade_test_kubernetes_latest_template_name: >-
+              {{-
+                generate_tests_installed_kubernetes_templates |
+                  selectattr('spec.values.kubernetesVersion', 'eq', upgrade_test_kubernetes_latest_available_version) |
+                  map(attribute = 'metadata.name') |
+                  first
+              }}
+            generate_tests_kubernetes_test_cases:
+              - name: latest
+                kubernetes_template: "{{ upgrade_test_kubernetes_latest_template_name }}"
+                control_plane_size: "{{ generate_tests_kubernetes_test_case_control_plane_size }}"
+                worker_size: "{{ generate_tests_kubernetes_test_case_worker_size }}"
+                worker_count: "{{ generate_tests_kubernetes_test_case_worker_count }}"
+                dashboard_enabled: "{{ generate_tests_kubernetes_test_case_dashboard_enabled }}"
+                monitoring_enabled: "{{ generate_tests_kubernetes_test_case_monitoring_enabled }}"
         # GitHub terminates jobs after 6 hours
         # We don't want jobs to acquire the lock then get timed out before they can finish
         # So wait a maximum of 3 hours to acquire the lock, leaving 3 hours for other tasks in the job

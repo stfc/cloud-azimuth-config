@@ -80,6 +80,7 @@ infra_data_volume_size: 100
 # The Kubernetes version that will be used for the HA cluster
 #   N.B. This is populated automatically using community images by default
 # capi_cluster_kubernetes_version: ""
+#capi_cluster_kubernetes_version: 1.29.10
 # The ID of the image that will be used for the nodes of the HA clu3\ster
 #   N.B. This is populated automatically using community images by default
 # capi_cluster_machine_image_id: "0074f426-8fd8-45dd-820a-4927aec5fbd9"
@@ -93,6 +94,7 @@ capi_cluster_worker_count: 3
 # This IP must be pre-allocated to the project and should have the wildcard ingress domain assigned to it
 capi_cluster_addons_ingress_load_balancer_ip: "130.246.215.76"
 zenith_sshd_service_load_balancer_ip: "130.246.215.76"
+
 
 #### For the HA cluster ####
 
@@ -200,29 +202,4 @@ azimuth_authenticator_federated_protocol: "openid"
 # # This should correspond to the Keystone federation URL, e.g. <auth url>/auth/OS-FEDERATION/websso/<provider>
 # azimuth_authenticator_federated_provider: oidc
 # # azimuth_authenticator_federated_provider: https://openstack.stfc.ac.uk:5000/v3/auth/OS-FEDERATION/identity_providers/openid/protocols/openid/websso?origin=https://openstack.stfc.ac.uk/auth/websso/
-
-#############################################################################
-# Azimuth repos
-
-# # Azimuth-images
-# community_images_azimuth_images_repo: https://github.com/azimuth-cloud/azimuth-images
-# community_images_azimuth_images_version: 0.13.0
-
-# # Workstation
-# azimuth_caas_stackhpc_workstation_git_url: https://github.com/azimuth-cloud/caas-workstation.git
-# azimuth_caas_stackhpc_workstation_git_version: 0.8.1
-# # azimuth_caas_stackhpc_workstation_git_url: https://github.com/Chris-green-stfc/caas-workstation
-# # azimuth_caas_stackhpc_workstation_git_version: 0a21207    
-
-# # R-Studio
-# azimuth_caas_stackhpc_rstudio_git_url: https://github.com/azimuth-cloud/caas-r-studio-server
-# azimuth_caas_stackhpc_rstudio_git_version: 0.7.0
-
-# # Repo2docker 
-# azimuth_caas_stackhpc_repo2docker_git_url: https://github.com/azimuth-cloud/caas-repo2docker.git
-# azimuth_caas_stackhpc_repo2docker_git_version: 0.7.0
-
-# # SLURM
-# azimuth_caas_stackhpc_slurm_appliance_git_url: https://github.com/stackhpc/ansible-slurm-appliance.git
-# azimuth_caas_stackhpc_slurm_appliance_git_version: v1.155
 
