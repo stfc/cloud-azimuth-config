@@ -92,7 +92,7 @@ capi_cluster_worker_count: 3
 # The fixed floating IP to associate with the load balancer for the ingress controller
 # This IP must be pre-allocated to the project and should have the wildcard ingress domain assigned to it
 capi_cluster_addons_ingress_load_balancer_ip: "130.246.215.76"
-zenith_sshd_service_load_balancer_ip: "130.246.215.76"
+zenith_sshd_service_load_balancer_ip: "130.246.80.24"
 
 #### For the HA cluster ####
 
