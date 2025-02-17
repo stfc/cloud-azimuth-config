@@ -1,4 +1,16 @@
 #############################################################################
+# Dev only area
+
+# Seed-vm IP
+infra_fixed_floatingip: "130.246.80.61"
+
+# The fixed floating IP to associate with the load balancer for the ingress controller
+# This IP must be pre-allocated to the project and should have the wildcard ingress domain assigned to it
+capi_cluster_addons_ingress_load_balancer_ip: "130.246.215.12"
+# Zenith ssh load balancer IP
+zenith_sshd_service_load_balancer_ip: "130.246.83.235"
+
+#############################################################################
 # ansible collections
 
 ## workstation
@@ -30,7 +42,6 @@ azimuth_caas_stackhpc_repo2docker_extra_vars_overrides:
 
 #############################################################################
 # Images configuration
-
 community_images_custom_properties:
   - "hw_scsi_model=virtio-scsi"
   - "hw_disk_bus=scsi"
@@ -46,21 +57,9 @@ infra_network_cidr: 192.168.100.0/24
 # The ID of the external network to connect to via a router
 infra_external_network_id: "5283f642-8bd8-48b6-8608-fa3006ff4539"
 
-# The fixed floating IP to associate with the machine
-# This IP must be pre-allocated to the project
-# For a single node deployment, this IP should have the wildcard ingress domain assigned to it
-infra_fixed_floatingip: "130.246.80.61"
-# OR
-# The name of the floating IP pool to allocate a floating IP from
-#infra_floatingip_pool: "public"
-# OR
-# The ID of a provisioning network that will be used to access the seed node
-# infra_provisioning_network_id: "5be315b7-7ebd-4254-97fe-18c1df501538"
-
 # The image id of an Ubuntu 20.04 image to use for the node
 #   N.B. This is populated automatically using community images by default
 # infra_image_id: "bc31f48a-b79d-4cbe-8481-08717e1e643e"
-# infra_image_id: ""
 
 # The id of the flavor to use for the node
 # For a seed node for an HA cluster, 8GB RAM is fine (maybe even 4GB)
@@ -89,10 +88,7 @@ capi_cluster_control_plane_flavor: "l6.c4"  # 4 vCPU, ~15GB RAM, 75GB disk
 capi_cluster_worker_flavor: "l6.c4"  # 4 vCPU, ~15GB RAM, 75GB disk
 # The number of worker nodes
 capi_cluster_worker_count: 3
-# The fixed floating IP to associate with the load balancer for the ingress controller
-# This IP must be pre-allocated to the project and should have the wildcard ingress domain assigned to it
-capi_cluster_addons_ingress_load_balancer_ip: "130.246.215.12"
-zenith_sshd_service_load_balancer_ip: "130.246.83.235"
+
 
 #### For the HA cluster ####
 
@@ -191,11 +187,3 @@ azimuth_authenticator_federated_enabled: yes
 azimuth_authenticator_federated_provider: "openid"
 azimuth_authenticator_federated_protocol: "openid"
 
-# # Whether the federated authenticator should be enabled (not enabled by default)
-# azimuth_authenticator_federated_enabled: false
-# # The label for the federated authenticator
-# azimuth_authenticator_federated_label: "Federated"
-# # The provider for the federated authenticator
-# # This should correspond to the Keystone federation URL, e.g. <auth url>/auth/OS-FEDERATION/websso/<provider>
-# azimuth_authenticator_federated_provider: oidc
-# # azimuth_authenticator_federated_provider: https://openstack.stfc.ac.uk:5000/v3/auth/OS-FEDERATION/identity_providers/openid/protocols/openid/websso?origin=https://openstack.stfc.ac.uk/auth/websso/
