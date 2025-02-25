@@ -13,7 +13,8 @@ zenith_sshd_service_load_balancer_ip: "130.246.83.235"
 # The base domain to use for ingress resources
 ingress_base_domain: "apps.staging-cape.stfc.ac.uk"
 
-
+# remove cert validation, due to self-signed cert
+keycloak_validate_certs: false
 #############################################################################
 # ansible collections
 
