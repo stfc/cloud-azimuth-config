@@ -1,0 +1,13 @@
+capi_cluster_addons_ingress_load_balancer_ip: "130.246.215.76"
+zenith_sshd_service_load_balancer_ip: "130.246.80.24"
+
+#############################################################################
+# Ingress configuration
+
+# The base domain to use for ingress resources
+ingress_base_domain: "apps.cape.stfc.ac.uk"
+ingress_tls_enabled: true
+
+# Indicates if cert-manager should be enabled
+# Currently, TLS is enabled for ingress if cert-manager is enabled
+# certmanager_enabled: no

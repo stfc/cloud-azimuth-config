@@ -1,0 +1,11 @@
+# variables for setting up singlenode dev azimuth 
+
+infra_flavor_id: "6dcd1f3e-bd1d-43b9-9668-8e07735fb550"  # l3.tiny (8 vCPU, ~30GB RAM, 200GB disk)
+# Disable HTTPS and certificate verification everywhere to avoid certificate issues
+ingress_tls_enabled: false
+# Disable SSL verification for OpenStack in case it uses a custom CA
+azimuth_openstack_verify_ssl: false
+
+# Upload images as private - since its development - only the project its built on can spawn test VMs/clusters 
+community_images_default_visibility: private
+community_images_update_existing_visibility: true

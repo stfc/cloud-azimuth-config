@@ -1,0 +1,161 @@
+# common variables for all stfc environments - stfc-development, stfc-production, stfc-staging 
+
+#############################################################################
+# Images configuration
+
+community_images_custom_properties:
+  - "hw_scsi_model=virtio-scsi"
+  - "hw_disk_bus=scsi"
+
+
+# don't want any kubernetes images so ignore them
+# we use our own capi images
+community_images_azimuth_images_manifest: >-
+ {{ lookup('url', community_images_azimuth_images_manifest_url, split_lines = False) | from_json | dict2items | rejectattr('key', 'match', '^kubernetes.*') | items2dict }}
+ 
+#############################################################################
+# Ansible Playbooks For STFC Security Compliance 
+
+# Define common variables to be reused
+stfc_compliance_extra_vars:
+  ansible_init_collections:
+    - name: https://github.com/stfc/cloud-image-builders.git
+      version: "3b0e9b3" # merge into main?
+      type: git
+  ansible_init_playbooks:
+    - name: azimuth.security.run_vm_baseline
+
+# Workstation configuration
+azimuth_caas_stackhpc_workstation_extra_vars_overrides: "{{ stfc_compliance_extra_vars }}"
+
+# RStudio configuration
+azimuth_caas_stackhpc_rstudio_extra_vars_overrides: "{{ stfc_compliance_extra_vars }}"
+
+# Repo2Docker configuration
+azimuth_caas_stackhpc_repo2docker_extra_vars_overrides: "{{ stfc_compliance_extra_vars }}"
+
+#############################################################################
+# STFC Cloud CAPI Cluster Templates
+ 
+# set possible capi cluster templates for azimuth capi operator
+azimuth_capi_operator_images: 
+  capi-ubuntu-2204-kube-v1.31.4-2025-01-24:
+    id: "e2e38bed-4a7e-4e1f-aa38-8f98502e48b7"
+    kubernetes_version: "v1.31.4"
+  capi-ubuntu-2204-kube-v1.30.8-2025-01-24:
+    id: "3d49b731-1aa7-424a-8b65-f26aea06e5c6"
+    kubernetes_version: "v1.30.8"
+  capi-ubuntu-2204-kube-v1.29.12-2025-01-24:
+    id: "503a8525-0140-4947-bd87-6374ad967a5a"
+    kubernetes_version: "v1.29.12"
+  capi-ubuntu-2204-kube-v1.28.15-2025-01-24:
+    id: "8aa9cf54-0770-4cfd-8536-241611118a3d"
+    kubernetes_version: "v1.28.15"
+  capi-ubuntu-2204-kube-v1.27.16-2025-01-24:
+    id: "9534ef59-d17d-4d48-84b5-2e67f9d7a13f"
+    kubernetes_version: "v1.27.6"
+
+azimuth_capi_operator_cluster_templates_extra: |-
+  {
+    {% for key, image in azimuth_capi_operator_images.items() %}
+    {% if "kubernetes_version" in image %}
+    {% set kube_vn_no_prefix = image.kubernetes_version | regex_replace('^v', '') %}
+    {% set kube_vn_dash = kube_vn_no_prefix | replace('.', '-') %}
+    "kube-{{ kube_vn_dash }}": {
+      "annotations": {{ azimuth_capi_operator_cluster_template_annotations }},
+      "spec": {{
+        azimuth_capi_operator_cluster_template_defaults |
+          combine(
+            {
+              "label": image.kubernetes_version,
+              "description": "Kubernetes " ~ kube_vn_no_prefix ~ " with HA control plane.",
+              "values": {
+                "kubernetesVersion": kube_vn_no_prefix,
+                "machineImageId": image.id,
+              },
+            },
+            recursive = True
+          )
+      }},
+    },
+    {% endif %}
+    {% endfor %}
+  }
+
+#############################################################################
+# Configuration for the seed node (HA) or single node
+
+# The CIDR of the subnet that should be created
+infra_network_cidr: 192.168.100.0/24
+# The ID of the external network to connect to via a router
+infra_external_network_id: "5283f642-8bd8-48b6-8608-fa3006ff4539"
+
+# The id of the flavor to use for the node
+# For a seed node for an HA cluster, 8GB RAM is fine (maybe even 4GB)
+# For a single node deployment, >= 16GB RAM is recommended
+infra_flavor_id: "f120e108-7883-4933-bb76-4f88909447f6"  # l6.c4 (4 vCPU, ~15GB RAM, 75GB disk)
+
+# The size in GB for the data volume
+# This will hold all cluster data, including Kubernetes resources, and also PVC data
+infra_data_volume_size: 100
+
+# use a pre-existing STFC Cloud image rather than a community one
+# allows us to keep all existing cloud-init security configuration  
+infra_image_id: 11c31306-9a04-4900-8208-224d3c217017 # ubuntu-jammy-22.04-nogui
+
+#############################################################################
+# Configuration for Azimuth Cluster Operator
+
+azimuth_capi_operator_capi_helm_values_overrides: 
+  clusterNetworking:
+    internalNetwork:
+      nodeCidr: 192.168.128.0/17
+  registryMirrors: 
+    docker.io: 
+      - "https://dockerhub.stfc.ac.uk"
+
+azimuth_capi_operator_capi_helm_pods_cidr: 10.0.0.0/13
+azimuth_capi_operator_capi_helm_services_cidr: 10.8.0.0/13
+
+azimuth_capi_operator_capi_helm_openstack_loadbalancer_provider: amphora
+azimuth_capi_operator_capi_helm_csi_cinder_default_availability_zone: ceph
+
+azimuth_capi_operator_capi_helm_control_plane_omit_failure_domain: true
+azimuth_capi_operator_capi_helm_worker_failure_domain: null
+
+#############################################################################
+# Azimuth configuration
+
+# Indicates if the Zenith app proxy should be enabled
+azimuth_apps_enabled: yes
+# Indicates if Kubernetes support should be enabled
+azimuth_kubernetes_enabled: yes
+# Indicates if Cluster-as-a-Service (CaaS) should be enabled
+azimuth_clusters_enabled: yes
+
+# The name of the current cloud
+azimuth_current_cloud_name: stfc-cloud
+# The label for the current cloud
+azimuth_current_cloud_label: STFC Cloud
+
+#############################################################################
+# Configuration of authenticators / authentication methods
+
+# Use the STFC domain for now
+azimuth_openstack_domain: stfc
+
+azimuth_openstack_auth_url: https://openstack.stfc.ac.uk:5000/v3
+
+# Whether the password authenticator should be enabled (enabled by default)
+azimuth_authenticator_password_enabled: true
+# The label for the password authenticator
+azimuth_authenticator_password_label: "Username + Password"
+
+# Whether the appcred authenticator should be enabled (not enabled by default)
+azimuth_authenticator_appcred_enabled: false
+# The label for the appcred authenticator
+azimuth_authenticator_appcred_label: "Application Credential"
+
+azimuth_authenticator_federated_enabled: yes
+azimuth_authenticator_federated_provider: "openid"
+azimuth_authenticator_federated_protocol: "openid"
