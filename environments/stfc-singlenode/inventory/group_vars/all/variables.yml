@@ -9,3 +9,9 @@ azimuth_openstack_verify_ssl: false
 # Upload images as private - since its development - only the project its built on can spawn test VMs/clusters 
 community_images_default_visibility: private
 community_images_update_existing_visibility: true
+
+
+# deny creation of any platforms on any tenancies other than azimuth-staging (on dev openstack)
+# prevents unauthorized users using azimuth dev instances - as its meant for developing features and testing things 
+platforms_tenancy_allow_list:
+  - 89ab3c08e3794532acb354ff11693fad # azimuth-staging on dev openstack

@@ -15,3 +15,8 @@ ingress_base_domain: "apps.staging-cape.stfc.ac.uk"
 ingress_tls_enabled: false
 # Disable SSL verification for OpenStack in case it uses a custom CA
 azimuth_openstack_verify_ssl: false
+
+# deny creation of any platforms on any tenancies other than azimuth-staging
+# prevents unauthorized users using staging - as its meant for testing things
+platforms_tenancy_allow_list: 
+  - 3a9266ccea8c4e84a488636d84c0c2c7 # azimuth-staging
