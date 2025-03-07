@@ -8,9 +8,12 @@ capi_cluster_chart_repo: https://stfc.github.io/cloud-helm-charts/
 capi_cluster_chart_name: stfc-cloud-openstack-cluster
 capi_cluster_chart_version: 1.4.0
 
-capi_cluster_control_plane_flavor: "l6.c4"  # 4 vCPU, ~15GB RAM, 75GB disk
+# Worker/Control plane node count for azimuth capi cluster
+capi_cluster_control_plane_flavor: "dep-l2.tiny"  
 # The name of the flavor to use for worker nodes
-capi_cluster_worker_flavor: "l6.c4"  # 4 vCPU, ~15GB RAM, 75GB disk
+capi_cluster_worker_flavor: "dep-l2.tiny" 
+# The number of control plane nodes to use
+capi_cluster_control_plane_count: 5
 # The number of worker nodes
 capi_cluster_worker_count: 3
 

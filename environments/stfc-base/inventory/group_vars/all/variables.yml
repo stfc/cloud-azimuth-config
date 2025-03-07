@@ -106,7 +106,14 @@ infra_image_id: 11c31306-9a04-4900-8208-224d3c217017 # ubuntu-jammy-22.04-nogui
 #############################################################################
 # Configuration for Azimuth Cluster Operator
 
+# set user-defined clusters to have 5 control plane nodes
+# sacrifice compute - sacrificing compute to make etcd recovery much much easier
+azimuth_capi_operator_capi_helm_control_plane_count: 5
+
+# adding some extra capi helm values that aren't templated out as ansible variables
 azimuth_capi_operator_capi_helm_values_overrides: 
+  controlPlane:
+    machineCount: "{{ azimuth_capi_operator_capi_helm_control_plane_count }}"
   clusterNetworking:
     internalNetwork:
       nodeCidr: 192.168.128.0/17
@@ -149,7 +156,7 @@ azimuth_openstack_auth_url: https://openstack.stfc.ac.uk:5000/v3
 # Whether the password authenticator should be enabled (enabled by default)
 azimuth_authenticator_password_enabled: true
 # The label for the password authenticator
-azimuth_authenticator_password_label: "Username + Password"
+azimuth_authenticator_password_label: "Federal Login"
 
 # Whether the appcred authenticator should be enabled (not enabled by default)
 azimuth_authenticator_appcred_enabled: false
@@ -159,3 +166,4 @@ azimuth_authenticator_appcred_label: "Application Credential"
 azimuth_authenticator_federated_enabled: yes
 azimuth_authenticator_federated_provider: "openid"
 azimuth_authenticator_federated_protocol: "openid"
+azimuth_authenticator_federated_label: Login with IRIS IAM
