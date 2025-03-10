@@ -20,7 +20,7 @@ community_images_azimuth_images_manifest: >-
 stfc_compliance_extra_vars:
   ansible_init_collections:
     - name: https://github.com/stfc/cloud-image-builders.git
-      version: "3b0e9b3" # merge into main?
+      version: "6c5dcd3" # merge into main?
       type: git
   ansible_init_playbooks:
     - name: azimuth.security.run_vm_baseline
@@ -166,4 +166,4 @@ azimuth_authenticator_appcred_label: "Application Credential"
 azimuth_authenticator_federated_enabled: yes
 azimuth_authenticator_federated_provider: "openid"
 azimuth_authenticator_federated_protocol: "openid"
-azimuth_authenticator_federated_label: Login with IRIS IAM
+azimuth_authenticator_federated_label: Login using IAM
