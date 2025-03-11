@@ -1,0 +1,48 @@
+# common variables for azimuth instances running on STFC Cloud Staging 
+
+#############################################################################
+# Configuration for the seed node (HA) or single node
+
+# use a pre-existing STFC Cloud image rather than a community one
+# allows us to keep all existing cloud-init security configuration  
+infra_image_id: ecf7eea6-9f55-4fcd-9ce5-bc171018655c # ubuntu-jammy-22.04-nogui
+
+infra_flavor_id: d314c1e5-a1be-4aae-97f4-a840d4f53428 # l3.xsmall 
+
+# Use the first available external network
+infra_external_network_id: "0dc30001-edfb-4137-be76-8e51f38fd650"
+
+#############################################################################
+# Azimuth configuration
+
+# The name of the current cloud
+azimuth_current_cloud_name: staging-stfc-cloud
+# The label for the current cloud
+azimuth_current_cloud_label: Staging STFC Cloud
+
+#############################################################################
+# Configuration of authenticators / authentication methods
+
+azimuth_openstack_auth_url: https://dev-openstack.stfc.ac.uk:5000/v3
+azimuth_openstack_verify_ssl: false
+
+#############################################################################
+# STFC Cloud CAPI Cluster Templates
+ 
+# set possible capi cluster templates for azimuth capi operator
+azimuth_capi_operator_images: 
+  capi-ubuntu-2204-kube-v1.31.4-2025-01-24:
+    id: "56f0b929-e9ae-4e9e-9b1f-f952b6e91bba"
+    kubernetes_version: "v1.31.4"
+  capi-ubuntu-2204-kube-v1.30.8-2025-01-24:
+    id: "72fa7eef-f6f3-4cf3-8ddc-82610112b985"
+    kubernetes_version: "v1.30.8"
+  capi-ubuntu-2204-kube-v1.29.12-2025-01-24:
+    id: "5449330d-5757-40f3-8dcb-2fa8c6cd7e4f"
+    kubernetes_version: "v1.29.12"
+  capi-ubuntu-2204-kube-v1.28.15-2025-01-24:
+    id: "40491839-e29a-480c-a067-7ec636f6c0c8"
+    kubernetes_version: "v1.28.15"
+  capi-ubuntu-2204-kube-v1.27.16-2025-01-24:
+    id: "64425be9-fbf1-4fa2-8e81-fe085f816039"
+    kubernetes_version: "v1.27.6"
