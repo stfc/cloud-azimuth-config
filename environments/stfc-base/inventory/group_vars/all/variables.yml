@@ -32,7 +32,7 @@ community_images: >-
 stfc_compliance_extra_vars:
   ansible_init_collections:
     - name: https://github.com/stfc/cloud-image-builders.git
-      version: "6a789b2"
+      version: "main"
       type: git
   ansible_init_playbooks:
     - name: azimuth.security.prepare_user_image
