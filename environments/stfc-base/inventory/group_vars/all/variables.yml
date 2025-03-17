@@ -32,10 +32,10 @@ community_images: >-
 stfc_compliance_extra_vars:
   ansible_init_collections:
     - name: https://github.com/stfc/cloud-image-builders.git
-      version: "6c5dcd3" # merge into main?
+      version: "6a789b2"
       type: git
   ansible_init_playbooks:
-    - name: azimuth.security.run_vm_baseline
+    - name: azimuth.security.prepare_user_image
 
 # Workstation configuration
 azimuth_caas_stackhpc_workstation_extra_vars_overrides: "{{ stfc_compliance_extra_vars }}"
