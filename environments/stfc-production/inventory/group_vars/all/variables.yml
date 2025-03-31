@@ -6,7 +6,12 @@ zenith_sshd_service_load_balancer_ip: "130.246.80.24"
 
 # The base domain to use for ingress resources
 ingress_base_domain: "apps.cape.stfc.ac.uk"
-ingress_tls_enabled: true
+
+# TODO: remove this once we get renewed tls certs for production  
+# Disable HTTPS and certificate verification everywhere to avoid certificate issues
+ingress_tls_enabled: false
+# Disable SSL verification for OpenStack in case it uses a custom CA
+azimuth_openstack_verify_ssl: false
 
 # Indicates if cert-manager should be enabled
 # Currently, TLS is enabled for ingress if cert-manager is enabled
