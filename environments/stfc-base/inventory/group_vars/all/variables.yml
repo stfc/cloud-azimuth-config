@@ -14,16 +14,20 @@ community_images_azimuth_images_manifest: >-
  {{ lookup('url', community_images_azimuth_images_manifest_url, split_lines = False) | from_json | dict2items | rejectattr('key', 'match', '^kubernetes.*') | items2dict }}
  
 # prefix all azimuth community image names with azimuth-* 
-community_images: >-
+parsed_community_images: >-
   {% set result = {} %}
   {% for dict in [community_images_default, community_images_extra] %}
-  {%   for key, value in dict.items() %}
-  {%     set modified_value = value | combine({'name': 'azimuth-' + value.name}) %}
-  {%     set _ = result.update({key: modified_value}) %}
+  {%   for key, image in dict.items() %}
+  {%     if "name" in image %}
+  {%        set _ = image.update({'name': 'azimuth-' + image.name}) %}
+  {%     endif %}
+  {%     set _ = result.update({key: image}) %}
   {%   endfor %}
   {% endfor %}
-  "{{ result }}"
+  {{ result }}
 
+# convert string outputted by jinja into a dictionary
+community_images: "{{ parsed_community_images | replace('\"', '') | trim }}"
 
 #############################################################################
 # Ansible Playbooks For STFC Security Compliance 
@@ -32,10 +36,10 @@ community_images: >-
 stfc_compliance_extra_vars:
   ansible_init_collections:
     - name: https://github.com/stfc/cloud-image-builders.git
-      version: "6c5dcd3" # merge into main?
+      version: "main"
       type: git
   ansible_init_playbooks:
-    - name: azimuth.security.run_vm_baseline
+    - name: azimuth.security.prepare_user_image
 
 # Workstation configuration
 azimuth_caas_stackhpc_workstation_extra_vars_overrides: "{{ stfc_compliance_extra_vars }}"

@@ -6,7 +6,7 @@
 # use STFC cloud CAPI wrapper chart - brings in our own STFC-Cloud specific values
 capi_cluster_chart_repo: https://stfc.github.io/cloud-helm-charts/
 capi_cluster_chart_name: stfc-cloud-openstack-cluster
-capi_cluster_chart_version: 1.4.0
+capi_cluster_chart_version: 1.4.1
 
 # Worker/Control plane node count for azimuth capi cluster
 capi_cluster_control_plane_flavor: "dep-l2.tiny"  
@@ -30,7 +30,7 @@ capi_cluster_kubernetes_version: "{{ azimuth_capi_operator_images['capi-ubuntu-2
 # override CAPI release values - default release values aren't compatible with our chart
 capi_cluster_release_values: >-
   {{-
-    {"openstack-cluster": {"clouds": { "openstack": capi_cluster_credentials.clouds[capi_cluster_cloud_name] } } } |
+    {"clouds": { "openstack": capi_cluster_credentials.clouds[capi_cluster_cloud_name] } } |
     combine({"openstack-cluster": {"clouds": {"openstack": {"auth": {"project_id": capi_cluster_openstack_project_id } } } } },
       recursive=True
     ) |

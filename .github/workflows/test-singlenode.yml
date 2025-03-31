@@ -1,5 +1,6 @@
 name: Single node test
 
+# action is not ready yet
 on:
   # Allow manual execution on any branch
   workflow_dispatch:
@@ -14,33 +15,33 @@ on:
           - arcus
           - leafcloud
   # Execute by default on pull requests to the devel branch
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - ready_for_review
-      - reopened
-    branches:
-      - devel
-    # Only run the tests when something changes that affects us
-    paths:
-      - .gitattributes
-      - .gitignore
-      - requirements.txt
-      - requirements.yml
-      - .github/actions/**
-      - .github/environments/common
-      - .github/environments/arcus
-      - .github/environments/leafcloud
-      - .github/workflows/test-singlenode.yml
-      - bin/**
-      - "!bin/ci-setup"
-      - "!bin/create-merge-branch"
-      - "!bin/port-forward"
-      - "!bin/tilt-*"
-      - environments/base/**
-      - environments/singlenode/**
-      - environments/demo/**
+#  pull_request:
+#    types:
+#      - opened
+#      - synchronize
+#      - ready_for_review
+#      - reopened
+#    branches:
+#      - devel
+#    # Only run the tests when something changes that affects us
+#    paths:
+#      - .gitattributes
+#      - .gitignore
+#      - requirements.txt
+#      - requirements.yml
+#      - .github/actions/**
+#      - .github/environments/common
+#      - .github/environments/arcus
+#      - .github/environments/leafcloud
+#      - .github/workflows/test-singlenode.yml
+#      - bin/**
+#      - "!bin/ci-setup"
+#      - "!bin/create-merge-branch"
+#      - "!bin/port-forward"
+#      - "!bin/tilt-*"
+#      - environments/base/**
+#      - environments/singlenode/**
+#      - environments/demo/**
 
 # Use the head ref for workflow concurrency, with cancellation
 # This should mean that any previous runs of this workflow for the same PR
