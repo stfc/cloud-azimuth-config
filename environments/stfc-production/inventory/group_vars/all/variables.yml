@@ -36,3 +36,7 @@ community_images_azimuth_images_manifest: {}
 # azimuth_caas_workstation_ssh_tenancy_allow_list: ["3a9266ccea8c4e84a488636d84c0c2c7"]
 # azimuth_caas_repo2docker_tenancy_allow_list: ["3a9266ccea8c4e84a488636d84c0c2c7"]
 # azimuth_caas_rstudio_tenancy_allow_list: ["3a9266ccea8c4e84a488636d84c0c2c7"]
+
+##################################################################################
+# Disable ssh-workstations
+azimuth_caas_workstation_ssh_enabled: no
