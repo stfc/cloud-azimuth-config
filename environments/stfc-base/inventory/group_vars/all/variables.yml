@@ -117,7 +117,7 @@ infra_data_volume_size: 100
 
 # use a pre-existing STFC Cloud image rather than a community one
 # allows us to keep all existing cloud-init security configuration  
-infra_image_id: 11c31306-9a04-4900-8208-224d3c217017 # ubuntu-jammy-22.04-nogui
+infra_image_id: c3d34093-2895-4616-99ae-3713ac2df586 # ubuntu-jammy-22.04-nogui
 
 #############################################################################
 # Configuration for Azimuth Cluster Operator
