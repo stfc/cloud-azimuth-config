@@ -20,3 +20,7 @@ azimuth_openstack_verify_ssl: false
 # prevents unauthorized users using staging - as its meant for testing things
 platforms_tenancy_allow_list: 
   - 3a9266ccea8c4e84a488636d84c0c2c7 # azimuth-staging
+
+##################################################################################
+# Disable ssh-workstations
+azimuth_caas_workstation_ssh_enabled: no
