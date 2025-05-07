@@ -50,6 +50,9 @@ azimuth_caas_stackhpc_rstudio_extra_vars_overrides: "{{ stfc_compliance_extra_va
 # Repo2Docker configuration
 azimuth_caas_stackhpc_repo2docker_extra_vars_overrides: "{{ stfc_compliance_extra_vars }}"
 
+# Slurm configuration
+azimuth_caas_stackhpc_slurm_appliance_extra_vars_overrides: "{{ stfc_compliance_extra_vars }}"
+
 #############################################################################
 # STFC Cloud CAPI Cluster Templates
  
