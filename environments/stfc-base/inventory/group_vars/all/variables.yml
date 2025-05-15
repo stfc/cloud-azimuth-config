@@ -186,3 +186,8 @@ azimuth_authenticator_federated_enabled: yes
 azimuth_authenticator_federated_provider: "openid"
 azimuth_authenticator_federated_protocol: "openid"
 azimuth_authenticator_federated_label: Login using IAM
+
+#######################################################################
+# Disabling FIP workstations
+azimuth_caas_workstation_ssh_enabled: no
+
