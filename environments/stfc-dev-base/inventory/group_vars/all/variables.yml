@@ -28,21 +28,24 @@ azimuth_openstack_verify_ssl: false
 
 #############################################################################
 # STFC Cloud CAPI Cluster Templates
- 
 # set possible capi cluster templates for azimuth capi operator
 azimuth_capi_operator_images: 
-  capi-ubuntu-2204-kube-v1.31.4-2025-01-24:
-    id: "56f0b929-e9ae-4e9e-9b1f-f952b6e91bba"
-    kubernetes_version: "v1.31.4"
-  capi-ubuntu-2204-kube-v1.30.8-2025-01-24:
-    id: "72fa7eef-f6f3-4cf3-8ddc-82610112b985"
-    kubernetes_version: "v1.30.8"
-  capi-ubuntu-2204-kube-v1.29.12-2025-01-24:
-    id: "5449330d-5757-40f3-8dcb-2fa8c6cd7e4f"
-    kubernetes_version: "v1.29.12"
-  capi-ubuntu-2204-kube-v1.28.15-2025-01-24:
-    id: "40491839-e29a-480c-a067-7ec636f6c0c8"
-    kubernetes_version: "v1.28.15"
   capi-ubuntu-2204-kube-v1.27.16-2025-01-24:
     id: "64425be9-fbf1-4fa2-8e81-fe085f816039"
-    kubernetes_version: "v1.27.6"
+    kubernetes_version: "v1.27.16"
+  capi-ubuntu-2204-kube-v1.28.15-2025-05-02:
+    id: "298e196f-58dd-451f-8eee-5f1415f55322"
+    kubernetes_version: "v1.28.15"
+  capi-ubuntu-2204-kube-v1.29.15-2025-05-02:
+    id: "786e59e2-e499-482d-9668-c732c61e4945"
+    kubernetes_version: "v1.29.15"
+  capi-ubuntu-2204-kube-v1.30.12-2025-05-02:
+    id: "32afcdbc-f431-4003-840e-a91056228383"
+    kubernetes_version: "v1.30.12"
+  capi-ubuntu-2204-kube-v1.31.8-2025-05-02:
+    id: "a1b2b627-642c-4a37-bf50-886d09308253"
+    kubernetes_version: "v1.31.8"
+  capi-ubuntu-2204-kube-v1.32.4-2025-05-02:
+    id: "bb88d8b3-1bf6-4cc0-9238-809b84114310"
+    kubernetes_version: "v1.32.4"
+  
