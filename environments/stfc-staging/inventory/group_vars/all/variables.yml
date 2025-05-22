@@ -24,7 +24,6 @@ platforms_tenancy_allow_list:
 ##################################################################################
 # STFC Security policy - disable 3rd party images
 # Azimuth caas operator is tightly coupled with 3rd party images - disable apps on production until fixed
-# TODO: fix - doesn't seem to work to disable CAAS apps
 azimuth_clusters_enabled: false
 
 # Disable ssh-workstations
