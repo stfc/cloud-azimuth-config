@@ -58,17 +58,20 @@ azimuth_caas_stackhpc_slurm_appliance_extra_vars_overrides: "{{ stfc_compliance_
  
 # set possible capi cluster templates for azimuth capi operator
 azimuth_capi_operator_images: 
-  capi-ubuntu-2204-kube-v1.31.4-2025-01-24:
-    id: "e2e38bed-4a7e-4e1f-aa38-8f98502e48b7"
-    kubernetes_version: "v1.31.4"
-  capi-ubuntu-2204-kube-v1.30.8-2025-01-24:
-    id: "3d49b731-1aa7-424a-8b65-f26aea06e5c6"
-    kubernetes_version: "v1.30.8"
-  capi-ubuntu-2204-kube-v1.29.12-2025-01-24:
-    id: "503a8525-0140-4947-bd87-6374ad967a5a"
-    kubernetes_version: "v1.29.12"
-  capi-ubuntu-2204-kube-v1.28.15-2025-01-24:
-    id: "8aa9cf54-0770-4cfd-8536-241611118a3d"
+  capi-ubuntu-2204-kube-v1.32.4-2025-05-02:
+    id: "71708eba-0468-4cd9-ae07-aeaa04bb728d"
+    kubernetes_version: "v1.32.4"
+  capi-ubuntu-2204-kube-v1.31.8-2025-05-02:
+    id: "17378d8d-95bd-484d-beb7-a3bd205d911b"
+    kubernetes_version: "v1.31.8"
+  capi-ubuntu-2204-kube-v1.30.12-2025-05-02:
+    id: "06aef37d-330c-4493-ac86-70a4b7d1456b"
+    kubernetes_version: "v1.30.12"
+  capi-ubuntu-2204-kube-v1.29.15-2025-05-02:
+    id: "68b0815b-1e4e-40e0-a44f-2733051f4213"
+    kubernetes_version: "v1.29.15"
+  capi-ubuntu-2204-kube-v1.28.15-2025-05-02:
+    id: "2bbbe720-a88f-40e4-9cff-8993a8731ea8"
     kubernetes_version: "v1.28.15"
   capi-ubuntu-2204-kube-v1.27.16-2025-01-24:
     id: "9534ef59-d17d-4d48-84b5-2e67f9d7a13f"
