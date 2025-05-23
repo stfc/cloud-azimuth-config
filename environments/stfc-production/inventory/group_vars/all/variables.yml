@@ -1,3 +1,6 @@
+#############################################################################
+# Configuration for the HA cluster
+
 capi_cluster_addons_ingress_load_balancer_ip: "130.246.215.76"
 zenith_sshd_service_load_balancer_ip: "130.246.80.24"
 
@@ -7,36 +10,14 @@ zenith_sshd_service_load_balancer_ip: "130.246.80.24"
 # The base domain to use for ingress resources
 ingress_base_domain: "apps.cape.stfc.ac.uk"
 
-# TODO: remove this once we get renewed tls certs for production  
-# Disable HTTPS and certificate verification everywhere to avoid certificate issues
-ingress_tls_enabled: false
-# Disable SSL verification for OpenStack in case it uses a custom CA
-azimuth_openstack_verify_ssl: false
-
-# Indicates if cert-manager should be enabled
-# Currently, TLS is enabled for ingress if cert-manager is enabled
-# certmanager_enabled: no
-
-
-###############################################################################
-# STFC Image access control
-
-# disable all community images as they are not STFC compliant
-# easiest way to disable uploading community images and the creation of any related services
-community_images_azimuth_images_manifest: {}
-
-# TODO: remove above line when there are are community images we want to provide to users
-#   - add line(s) below for platforms that you want to disallow general access
-#   - NOTE: at least one allow rule should be present for deny-by-default to work 
-#   - we chose the azimuth-staging project
-
-# TODO: after testing each of these services remove the subsequent line to allow users access
-# azimuth_caas_stackhpc_slurm_appliance_tenancy_allow_list: ["3a9266ccea8c4e84a488636d84c0c2c7"]
-# azimuth_caas_workstation_tenancy_allow_list: ["3a9266ccea8c4e84a488636d84c0c2c7"]
-# azimuth_caas_workstation_ssh_tenancy_allow_list: ["3a9266ccea8c4e84a488636d84c0c2c7"]
-# azimuth_caas_repo2docker_tenancy_allow_list: ["3a9266ccea8c4e84a488636d84c0c2c7"]
-# azimuth_caas_rstudio_tenancy_allow_list: ["3a9266ccea8c4e84a488636d84c0c2c7"]
 
 ##################################################################################
+# STFC Security policy - disable 3rd party images
+# Azimuth caas operator is tightly coupled with 3rd party images - disable apps on production until fixed
+azimuth_clusters_enabled: false
+
+# prevent any community images from being used by other projects
+community_images_default_visibility: private
+
 # Disable ssh-workstations
 azimuth_caas_workstation_ssh_enabled: no

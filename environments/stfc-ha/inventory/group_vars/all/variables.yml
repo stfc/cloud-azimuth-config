@@ -6,7 +6,7 @@
 # use STFC cloud CAPI wrapper chart - brings in our own STFC-Cloud specific values
 capi_cluster_chart_repo: https://stfc.github.io/cloud-helm-charts/
 capi_cluster_chart_name: stfc-cloud-openstack-cluster
-capi_cluster_chart_version: 1.4.3
+capi_cluster_chart_version: 1.4.5
 
 # Worker/Control plane node count for azimuth capi cluster
 capi_cluster_control_plane_flavor: "dep-l2.tiny"  
@@ -20,8 +20,8 @@ capi_cluster_worker_count: 3
 capi_cluster_control_plane_omit_failure_domain: true
 capi_cluster_worker_failure_domain: null
 
-capi_cluster_machine_image_id: "{{ azimuth_capi_operator_images['capi-ubuntu-2204-kube-v1.31.4-2025-01-24'].id }}"
-capi_cluster_kubernetes_version: "{{ azimuth_capi_operator_images['capi-ubuntu-2204-kube-v1.31.4-2025-01-24'].kubernetes_version }}"
+capi_cluster_machine_image_id: "{{ azimuth_capi_operator_images['capi-ubuntu-2204-kube-v1.32.4-2025-05-02'].id }}"
+capi_cluster_kubernetes_version: "{{ azimuth_capi_operator_images['capi-ubuntu-2204-kube-v1.32.4-2025-05-02'].kubernetes_version }}"
 
 # set our own release defaults
 # copy-paste of defaults but wrapped in "openstack-cluster"  
