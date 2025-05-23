@@ -16,5 +16,8 @@ ingress_base_domain: "apps.cape.stfc.ac.uk"
 # Azimuth caas operator is tightly coupled with 3rd party images - disable apps on production until fixed
 azimuth_clusters_enabled: false
 
+# prevent any community images from being used by other projects
+community_images_default_visibility: private
+
 # Disable ssh-workstations
 azimuth_caas_workstation_ssh_enabled: no
