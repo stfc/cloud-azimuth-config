@@ -12,7 +12,7 @@ using a layered approach.
 
 ## Documentation
 
-Documentation on deploying Azimuth can be found at https://azimuth-config.readthedocs.io.
+Documentation on deploying Azimuth can be found at <https://azimuth-config.readthedocs.io>.
 
 The documentation source is in the [docs](./docs/) directory of this repository.
 
@@ -31,4 +31,3 @@ docker run --rm \
 ```sh
 ansible-lint -c .ansible-lint.yml
 ```
-
