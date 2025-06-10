@@ -12,3 +12,6 @@ secrets.yml
 # Ignore generated secrets in demo and CI environments
 environments/demo/inventory/group_vars/all/secrets.yml
 .github/environments/**/secrets.yml
+
+environments/stfc-singlenode/clouds.yaml
+environments/stfc-dev/clouds.yaml
