@@ -1,0 +1,122 @@
+fluent_operator_values:
+  fluentbit:
+    enable: true
+    resources:
+      limits:
+        cpu: 500m
+        memory: 400Mi
+      requests:
+        cpu: 10m
+        memory: 25Mi
+    annotations:
+      fluentbit.io/exclude: "true"
+      promtheus.io/scrape: "true"
+
+    # additionalVolumes:
+    #   - name: host-proc
+    #     hostPath:
+    #       path: /proc/
+    #   - name: host-sys
+    #     hostPath:
+    #       path: /sys/
+    #   - name: host-buffer
+    #     hostPath:
+    #       path: /tmp/fluent-bit-buffer
+    # additionalVolumesMounts:
+    #   - mountPath: /host/sys
+    #     mountPropagation: HostToContainer
+    #     name: host-sys
+    #     readOnly: true
+    #   - mountPath: /host/proc
+    #     mountPropagation: HostToContainer
+    #     name: host-proc
+    #     readOnly: true
+    #   - mountPath: /host/fluent-bit-buffer
+    #     mountPropagation: HostToContainer
+    #     name: host-buffer
+
+    input:
+      tail:
+        enable: true
+      systemd:
+        enable: true
+      # nodeExporterMetrics:
+      #   tag: node_metrics
+      #   scrapeInterval: 15s
+      #   path:
+      #     procfs: /proc/
+      #     sysfs: /sys/
+      # fluentBitMetrics:
+      #   scrapeInterval: 10s
+      #   scrapeOnStart: true
+      #   tag: "fb.metrics"
+
+    output:
+      # opensearch:
+      #   host: opensearch.dev-worker.nubes.stfc.ac.uk
+      #   port: 443
+      #   httpPassword:
+      #     valueFrom:
+      #       secretKeyRef:
+      #         name: opensearch-credentials
+      #         key: password
+      #   httpUser:
+      #     valueFrom:
+      #       secretKeyRef:
+      #         name: opensearch-credentials
+      #         key: username
+      #   index: k8s_logs_dev_fluentbit_test_cluster
+      #   logstashFormat: On
+      #   logstashPrefix: node
+      #   replaceDots: true
+      #   type: flb_type
+      #   traceError: true
+      #   suppressTypeName: On
+      #   timeKey: "@timestamp"
+      #   tls:
+      #     verify: false
+
+      loki:
+        enable: true
+        host: loki-stack
+        port: 3100
+        tenantID: ""
+        labels: ["job=fluent-bit"]
+        removeKeys: ["kubernetes", "stream"]
+        autoKubernetesLabels: false
+        lineFormat: json
+
+      prometheusMetricsExporter:
+        metricsExporter:
+          host: "0.0.0.0"
+          port: 2020
+          addLabels:
+            app: "fluentbit"
+    # service:
+    #   storage:
+    #     path: "/host/fluent-bit-buffer/"
+    #     backlogMemLimit: "50MB"
+    #     checksum: "off"
+    #     deleteIrrecoverableChunks: "on"
+    #     maxChunksUp: 128
+    #     metrics: "on"
+    #     sync: normal
+
+    filter:
+      kubernetes:
+        enable: true
+        label: false
+        annotations: false
+      containerd:
+        enable: true
+      systemd:
+        enable: true
+    
+    serviceMonitor:
+      enable: true
+      interval: 30s
+      path: /api/v2/metrics/prometheus
+      scrapeTimeout: 10s
+      port: http-metrics
+  fluentd:
+    enable: false

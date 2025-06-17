@@ -1,0 +1,17 @@
+azimuth_capi_operator_helm_addon_overrides:
+  monitoring:
+        lokiStack:
+          release:
+            values:
+              promtail:
+                enabled: false
+  custom:
+    fluent-operator:
+      kind: HelmRelease
+      spec:
+        namespace: monitoring-system
+        chart:
+          repo: https://fluent.github.io/helm-charts
+          name: fluent-operator
+          version: 3.4.0
+        values: "{{ fluent_operator_values }}"
