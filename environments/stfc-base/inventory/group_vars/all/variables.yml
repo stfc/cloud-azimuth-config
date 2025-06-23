@@ -130,7 +130,7 @@ infra_image_id: c3d34093-2895-4616-99ae-3713ac2df586 # ubuntu-jammy-22.04-nogui
 
 # set user-defined clusters to have 5 control plane nodes
 # sacrifice compute - sacrificing compute to make etcd recovery much much easier
-azimuth_capi_operator_capi_helm_control_plane_count: 1
+azimuth_capi_operator_capi_helm_control_plane_count: 5
 
 # adding some extra capi helm values that aren't templated out as ansible variables
 azimuth_capi_operator_capi_helm_values_overrides: 

@@ -15,3 +15,17 @@ azimuth_capi_operator_helm_addon_overrides:
           name: fluent-operator
           version: 3.4.0
         values: "{{ fluent_operator_values }}"
+    opensearch-credentials:
+      kind: Manifests
+      spec:
+        namespace: monitoring-system
+        manifests:
+          opensearch-credentials.yaml: |-
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: opensearch-credentials
+            type: Opaque
+            stringData:
+              username: <opensearch_write_only_username>
+              password: <opensearch_password>

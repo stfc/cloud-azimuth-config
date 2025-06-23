@@ -52,29 +52,30 @@ fluent_operator_values:
       #   tag: "fb.metrics"
 
     output:
-      # opensearch:
-      #   host: opensearch.dev-worker.nubes.stfc.ac.uk
-      #   port: 443
-      #   httpPassword:
-      #     valueFrom:
-      #       secretKeyRef:
-      #         name: opensearch-credentials
-      #         key: password
-      #   httpUser:
-      #     valueFrom:
-      #       secretKeyRef:
-      #         name: opensearch-credentials
-      #         key: username
-      #   index: k8s_logs_dev_fluentbit_test_cluster
-      #   logstashFormat: On
-      #   logstashPrefix: node
-      #   replaceDots: true
-      #   type: flb_type
-      #   traceError: true
-      #   suppressTypeName: On
-      #   timeKey: "@timestamp"
-      #   tls:
-      #     verify: false
+      opensearch:
+        host: <opensearch_host>
+        port: <opensearch_port>
+        httpPassword:
+          valueFrom:
+            secretKeyRef:
+              name: opensearch-credentials
+              key: password
+        httpUser:
+          valueFrom:
+            secretKeyRef:
+              name: opensearch-credentials
+              key: username
+        index: azimuth_user_logs_cluster_<index_identifier>
+        logstashFormat: Off
+        logstashPrefix: node
+        replaceDots: true
+        type: flb_type
+        traceError: true
+        suppressTypeName: On
+        timeKey: "@timestamp"
+        tls:
+          verify: false
+          debug: 1
 
       loki:
         enable: true
@@ -82,9 +83,10 @@ fluent_operator_values:
         port: 3100
         tenantID: ""
         labels: ["job=fluent-bit"]
-        removeKeys: ["kubernetes", "stream"]
-        autoKubernetesLabels: false
-        lineFormat: json
+        # removeKeys: ["kubernetes", "stream"]
+        removeKeys: []
+        autoKubernetesLabels: "on"
+        # lineFormat: json
 
       prometheusMetricsExporter:
         metricsExporter:
@@ -105,7 +107,7 @@ fluent_operator_values:
     filter:
       kubernetes:
         enable: true
-        label: false
+        labels: true
         annotations: false
       containerd:
         enable: true
