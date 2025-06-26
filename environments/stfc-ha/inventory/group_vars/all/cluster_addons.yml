@@ -1,6 +1,7 @@
-azimuth_capi_operator_helm_addon_overrides:
+capi_cluster_helm_addon_overrides:
   monitoring:
         lokiStack:
+          enabled: true
           release:
             values:
               promtail:
@@ -14,7 +15,8 @@ azimuth_capi_operator_helm_addon_overrides:
           repo: https://fluent.github.io/helm-charts
           name: fluent-operator
           version: 3.4.0
-        values: "{{ fluent_operator_values }}"
+        values: "{{ capi_cluster_fluent_operator_values }}"
+    # TODO: Make this secret + encrypted
     opensearch-credentials:
       kind: Manifests
       spec:
@@ -27,5 +29,5 @@ azimuth_capi_operator_helm_addon_overrides:
               name: opensearch-credentials
             type: Opaque
             stringData:
-              username: <opensearch_write_only_username>
-              password: <opensearch_password>
+              username: <azimuth_cluster_opensearch_username>
+              password: <azimuth_cluster_opensearch_password>

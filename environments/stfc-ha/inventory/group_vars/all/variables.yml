@@ -27,6 +27,9 @@ capi_cluster_kubernetes_version: "{{ azimuth_capi_operator_images['capi-ubuntu-2
 # copy-paste of defaults but wrapped in "openstack-cluster"  
 # https://github.com/azimuth-cloud/ansible-collection-azimuth-ops/blob/main/roles/capi_cluster/defaults/main.yml
 
+capi_cluster_release_overrides:
+  addons: "{{ capi_cluster_helm_addon_overrides }}"
+
 # override CAPI release values - default release values aren't compatible with our chart
 capi_cluster_release_values: >-
   {{-
