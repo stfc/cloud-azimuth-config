@@ -31,3 +31,13 @@ capi_cluster_helm_addon_overrides:
             stringData:
               username: <azimuth_cluster_opensearch_username>
               password: <azimuth_cluster_opensearch_password>
+      alertmanager:
+        alertmanagerSpec:
+                externalUrl: "{{ capi_cluster_addons_monitoring_alertmanager_external_url }}"
+                retention: "{{ capi_cluster_addons_monitoring_alertmanager_retention }}"
+                storage:
+                  volumeClaimTemplate:
+                    spec:
+                      resources:
+                        requests:
+                          storage: "{{ capi_cluster_addons_monitoring_alertmanager_volume_size }}"
