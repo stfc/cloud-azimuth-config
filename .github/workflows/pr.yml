@@ -106,3 +106,4 @@ jobs:
     needs: files_changed
     if: needs.files_changed.outputs.paths == 'true'
     uses: ./.github/workflows/test-singlenode.yml
+    secrets: inherit
