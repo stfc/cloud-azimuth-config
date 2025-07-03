@@ -2,21 +2,22 @@
 
 `azimuth-ops` supports two deployment methods - `singlenode` and `ha`.
 
+<!-- prettier-ignore-start -->
 !!! info "Networking automation"
+    azimuth-ops will create an internal network, onto which all nodes for the deployment will be placed.
+    It will also create a router connecting the internal network to the external network where floating IPs are allocated.
+<!-- prettier-ignore-end -->
 
-    `azimuth-ops` will create an internal network, onto which all nodes for the deployment
-    will be placed. It will also create a router connecting the internal network to the
-    external network where floating IPs are allocated.
-
-## Single node
+## Single node
 
 In this deployment method, a single node is provisioned with [OpenTofu](https://opentofu.org/)
 and configured as a [K3s](https://k3s.io/) cluster. The full Azimuth stack is then deployed
 onto this cluster.
 
+<!-- prettier-ignore-start -->
 !!! warning
-
     This deployment method is only suitable for development or demonstration.
+<!-- prettier-ignore-end -->
 
 To use the single node deployment method, use the `singlenode` environment in your `ansible.cfg`:
 
