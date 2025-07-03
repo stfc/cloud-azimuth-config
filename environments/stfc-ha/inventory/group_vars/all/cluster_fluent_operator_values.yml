@@ -75,7 +75,7 @@ capi_cluster_fluent_operator_values:
         #    b. Note, the "cluster" and "infra_cluster" are CRD types cluster.cluster.x-k8s.io and openstackcluster.infrastructure.cluster.x-k8s.io; not clusters.azimuth.stackhpc.com
         # 3. Template for the Kubernetes UID of the cluster object, for it to be unique to the project
         # 4. Re-disable templating
-        logstashPrefix: "{{ '{%- endraw %}' }}{% raw %}kube_logs_azimuth_{{ cluster.metadata.uid }}_projectid_{{ (cloud_identity.data[\"user_info.yaml\"] | b64decode | fromyaml).project_id }}{% endraw %}{{ '{%- raw %}' }}"
+        logstashPrefix: "{{ '{%- endraw %}' }}{% raw %}kube_logs_{{cluster_name}}{% endraw %}{{ '{%- raw %}' }}"
         # index: "azimuth_user_logs_<some_unique_name>"
         replaceDots: true
         type: flb_type
