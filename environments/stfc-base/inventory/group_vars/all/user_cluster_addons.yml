@@ -1,0 +1,31 @@
+azimuth_capi_operator_helm_addon_overrides:
+  monitoring:
+        lokiStack:
+          release:
+            values:
+              promtail:
+                enabled: false
+  custom:
+    fluent-operator:
+      kind: HelmRelease
+      spec:
+        namespace: monitoring-system
+        chart:
+          repo: https://fluent.github.io/helm-charts
+          name: fluent-operator
+          version: 3.4.0
+        values: "{{ azimuth_capi_operator_fluent_operator_values }}"
+    opensearch-credentials:
+      kind: Manifests
+      spec:
+        namespace: monitoring-system
+        manifests:
+          opensearch-credentials.yaml: |-
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: opensearch-credentials
+            type: Opaque
+            stringData:
+              username: "{{ user_cluster_logging_user }}"
+              password: "{{ user_cluster_logging_pass }}"
