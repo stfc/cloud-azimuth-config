@@ -27,5 +27,5 @@ azimuth_capi_operator_helm_addon_overrides:
               name: opensearch-credentials
             type: Opaque
             stringData:
-              username: <azimuth_user_cluster_opensearch_user>
-              password: <azimuth_user_cluster_opensearch_pass>
+              username: "{{ user_cluster_logging_user }}"
+              password: "{{ user_cluster_logging_pass }}"

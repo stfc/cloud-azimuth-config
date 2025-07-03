@@ -53,8 +53,9 @@ azimuth_capi_operator_fluent_operator_values:
 
     output:
       opensearch:
-        host: <opensearch_host>
-        port: <opensearch_port>
+        # TODO change this to point to opensearch "olaf" cluster (SCD department cluster)
+        host: opensearch.dev-worker.nubes.stfc.ac.uk
+        port: 9200
         httpPassword:
           valueFrom:
             secretKeyRef:
@@ -74,7 +75,7 @@ azimuth_capi_operator_fluent_operator_values:
         #    b. Note, the "cluster" and "infra_cluster" are CRD types cluster.cluster.x-k8s.io and openstackcluster.infrastructure.cluster.x-k8s.io; not clusters.azimuth.stackhpc.com
         # 3. Template for the Kubernetes UID of the cluster object, for it to be unique to the project
         # 4. Re-disable templating
-        logstashPrefix: "{{ '{%- endraw %}' }}{% raw %}<some_user_cluster_prefix>_projid_{{ (cloud_identity.data[\"user_info.yaml\"] | b64decode | fromyaml).project_id }}_cluster_{{ cluster.metadata.uid }}{% endraw %}{{ '{%- raw %}' }}"
+        logstashPrefix: "{{ '{%- endraw %}' }}{% raw %}kube_logs_azimuth_{{ cluster.metadata.uid }}_projectid_{{ (cloud_identity.data[\"user_info.yaml\"] | b64decode | fromyaml).project_id }}{% endraw %}{{ '{%- raw %}' }}"
         # index: "azimuth_user_logs_<some_unique_name>"
         replaceDots: true
         type: flb_type

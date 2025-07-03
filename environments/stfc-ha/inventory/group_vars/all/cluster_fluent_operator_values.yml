@@ -53,8 +53,9 @@ capi_cluster_fluent_operator_values:
 
     output:
       opensearch:
-        host: <opensearch_host>
-        port: <opensearch_port>
+        # TODO change this to point to opensearch "olaf" cluster (SCD department cluster)
+        host: opensearch.dev-worker.nubes.stfc.ac.uk
+        port: 9200
         httpPassword:
           valueFrom:
             secretKeyRef:
@@ -65,9 +66,17 @@ capi_cluster_fluent_operator_values:
             secretKeyRef:
               name: opensearch-credentials
               key: username
-        index: <azimuth_cluster_opensearch_index_name>
-        logstashFormat: Off
-        logstashPrefix: node
+        logstashFormat: On
+        # At the time of writing, custom addons have templating disabled:
+        # https://github.com/azimuth-cloud/capi-helm-charts/blob/affae0544b07c4b2e641b3b5bf990e561c055a91/charts/cluster-addons/templates/custom-addons.yaml#L15
+        # 1. Temporarily re-enable templating with an endraw
+        # 2. Template for Openstack Project ID by base64 decoding the user info from the cloud_credentials secret
+        #    a. https://github.com/azimuth-cloud/cluster-api-addon-provider/tree/main?tab=readme-ov-file#templates
+        #    b. Note, the "cluster" and "infra_cluster" are CRD types cluster.cluster.x-k8s.io and openstackcluster.infrastructure.cluster.x-k8s.io; not clusters.azimuth.stackhpc.com
+        # 3. Template for the Kubernetes UID of the cluster object, for it to be unique to the project
+        # 4. Re-disable templating
+        logstashPrefix: "{{ '{%- endraw %}' }}{% raw %}kube_logs_azimuth_{{ cluster.metadata.uid }}_projectid_{{ (cloud_identity.data[\"user_info.yaml\"] | b64decode | fromyaml).project_id }}{% endraw %}{{ '{%- raw %}' }}"
+        # index: "azimuth_user_logs_<some_unique_name>"
         replaceDots: true
         type: flb_type
         traceError: true
