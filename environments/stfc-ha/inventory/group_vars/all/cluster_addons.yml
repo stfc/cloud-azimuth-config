@@ -6,6 +6,11 @@ capi_cluster_helm_addon_overrides:
             values:
               promtail:
                 enabled: false
+        kubePrometheusStack:
+          release:
+            values:
+              alertmanager:
+                config: "{{ capi_cluster_alertmanager_values }}"
   custom:
     fluent-operator:
       kind: HelmRelease
