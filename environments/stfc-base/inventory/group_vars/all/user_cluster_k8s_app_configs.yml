@@ -21,4 +21,32 @@ azimuth_capi_operator_app_templates_jupyterhub_default_values:
           node_selector: {'nvidia.com/gpu.present': 'true'} # TODO: Does NFD or gpu-operator properly apply this label?
       # TODO: Add custom image option, take details from azimuth-ui.schema.yaml
       # Might need to fork for that...
+    hub:
+      extraConfig:
+        # We need to overwrite remoteuser.py to add redirect_to_server=False to give profile options
+        remoteuser.py: |
+          from jupyterhub.auth import Authenticator
+          from jupyterhub.handlers import BaseHandler
+
+          from tornado import web
+
+          class RemoteUserLoginHandler(BaseHandler):
+              def get(self):
+                  remote_user = self.request.headers.get("X-Remote-User")
+                  if not remote_user:
+                      raise web.HTTPError(401)
+                  user = self.user_from_username(remote_user)
+                  self.set_login_cookie(user)
+                  next_url = self.get_next_url(user)
+                  self.redirect(next_url)
+
+          class RemoteUserAuthenticator(Authenticator):
+              def get_handlers(self, app):
+                  return [(r'/login', RemoteUserLoginHandler)]
+
+              async def authenticate(self, *args, **kwargs):
+                  raise NotImplementedError()
+
+          c.JupyterHub.redirect_to_server = False
+          c.JupyterHub.authenticator_class = RemoteUserAuthenticator
 
