@@ -1,0 +1,61 @@
+azimuth_capi_operator_app_templates_jupyterhub_default_values:
+  jupyterhub:
+    prePuller:
+      # Disabled because of large GPU images
+      # TODO: See https://z2jh.jupyter.org/en/latest/resources/reference.html#prepuller-pullprofilelistimages for alternatives should we wish to renable
+      # I.e. we could add non-gpu images to extraImages
+      hook:
+        enabled: false 
+      continuous:
+        enabled: false
+
+    singleuser:
+      profileList:
+      - display_name: "Python environment (minimal)"
+        description: "Minimal Python environment"
+        default: true
+        kubespawner_override:
+          image: quay.io/jupyter/minimal-notebook:latest
+      - display_name: "Data Science Notebook"
+        description: "Libraries for data analysis in Python, R and Julia."
+        kubespawner_override:
+          image: quay.io/jupyter/datascience-notebook:latest
+      - display_name: "GPU-enabled Machine Learning environment"
+        description: >
+          Support for GPU-enabled machine learning in Python.
+          JupyterLab servers of this type will only start on node groups
+          including nodes that have access to an NVIDIA GPU.
+        kubespawner_override:
+          image: cschranz/gpu-jupyter:v1.9_cuda-12.6_ubuntu-24.04_python-only
+          node_selector: {'nvidia.com/gpu.present': 'true'}
+      # TODO: Add custom image option, take details from azimuth-ui.schema.yaml
+      # Might need to fork for that...
+    hub:
+      extraConfig:
+        # We need to overwrite remoteuser.py to add redirect_to_server=False to give profile options
+        remoteuser.py: |
+          from jupyterhub.auth import Authenticator
+          from jupyterhub.handlers import BaseHandler
+
+          from tornado import web
+
+          class RemoteUserLoginHandler(BaseHandler):
+              def get(self):
+                  remote_user = self.request.headers.get("X-Remote-User")
+                  if not remote_user:
+                      raise web.HTTPError(401)
+                  user = self.user_from_username(remote_user)
+                  self.set_login_cookie(user)
+                  next_url = self.get_next_url(user)
+                  self.redirect(next_url)
+
+          class RemoteUserAuthenticator(Authenticator):
+              def get_handlers(self, app):
+                  return [(r'/login', RemoteUserLoginHandler)]
+
+              async def authenticate(self, *args, **kwargs):
+                  raise NotImplementedError()
+
+          c.JupyterHub.redirect_to_server = False
+          c.JupyterHub.authenticator_class = RemoteUserAuthenticator
+
