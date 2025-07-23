@@ -54,7 +54,7 @@ azimuth_capi_operator_fluent_operator_values:
     output:
       opensearch:
         # TODO change this to point to opensearch "olaf" cluster (SCD department cluster)
-        host: opensearch.dev-worker.nubes.stfc.ac.uk
+        host: opensearch.staging-worker.nubes.stfc.ac.uk
         port: 9200
         httpPassword:
           valueFrom:
