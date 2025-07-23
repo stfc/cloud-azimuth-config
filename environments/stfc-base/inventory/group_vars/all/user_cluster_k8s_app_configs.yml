@@ -2,7 +2,7 @@ azimuth_capi_operator_app_templates_jupyterhub_default_values:
   jupyterhub:
     prePuller:
       # Disabled because of large GPU images
-      # See https://z2jh.jupyter.org/en/latest/resources/reference.html#prepuller-pullprofilelistimages for alternatives should we wish to renable
+      # TODO: See https://z2jh.jupyter.org/en/latest/resources/reference.html#prepuller-pullprofilelistimages for alternatives should we wish to renable
       # I.e. we could add non-gpu images to extraImages
       hook:
         enabled: false 
@@ -26,8 +26,8 @@ azimuth_capi_operator_app_templates_jupyterhub_default_values:
           JupyterLab servers of this type will only start on node groups
           including nodes that have access to an NVIDIA GPU.
         kubespawner_override:
-          image: cschranz/gpu-jupyter:v1.9_cuda-12.6_ubuntu-24.04_python-only # TODO: Is Cuda 12.6 compatibile with all our GPU flavors?
-          node_selector: {'nvidia.com/gpu.present': 'true'} # TODO: Does NFD or gpu-operator properly apply this label?
+          image: cschranz/gpu-jupyter:v1.9_cuda-12.6_ubuntu-24.04_python-only
+          node_selector: {'nvidia.com/gpu.present': 'true'}
       # TODO: Add custom image option, take details from azimuth-ui.schema.yaml
       # Might need to fork for that...
     hub:
