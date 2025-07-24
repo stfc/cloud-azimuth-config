@@ -21,8 +21,9 @@ capi_cluster_worker_count: 3
 capi_cluster_control_plane_omit_failure_domain: true
 capi_cluster_worker_failure_domain:
 
-capi_cluster_machine_image_id: "{{ azimuth_capi_operator_images['capi-ubuntu-2204-kube-v1.32.4-2025-05-02'].id }}"
-capi_cluster_kubernetes_version: "{{ azimuth_capi_operator_images['capi-ubuntu-2204-kube-v1.32.4-2025-05-02'].kubernetes_version }}"
+# TODO: make this find the latest image automatically
+capi_cluster_machine_image_id: "71708eba-0468-4cd9-ae07-aeaa04bb728d"
+capi_cluster_kubernetes_version:  "v1.32.4"
 
 # set our own release defaults
 # copy-paste of defaults but wrapped in "openstack-cluster"  

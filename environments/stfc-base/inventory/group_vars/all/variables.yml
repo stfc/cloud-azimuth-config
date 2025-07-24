@@ -28,7 +28,8 @@ parsed_community_images: >-
   {{ result }}
 
 # convert string outputted by jinja into a dictionary
-community_images: "{{ parsed_community_images | replace('\"', '') | trim }}"
+# community_images: "{{ parsed_community_images | replace('\"', '') | trim }}"
+community_images: {}
 
 #############################################################################
 # Ansible Playbooks For STFC Security Compliance 
@@ -148,7 +149,7 @@ azimuth_apps_enabled: true
 # Indicates if Kubernetes support should be enabled
 azimuth_kubernetes_enabled: true
 # Indicates if Cluster-as-a-Service (CaaS) should be enabled
-azimuth_clusters_enabled: true
+azimuth_clusters_enabled: false
 
 # The name of the current cloud
 azimuth_current_cloud_name: stfc-cloud
