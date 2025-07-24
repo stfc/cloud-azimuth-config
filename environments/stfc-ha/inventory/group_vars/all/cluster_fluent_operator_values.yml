@@ -1,3 +1,4 @@
+---
 capi_cluster_fluent_operator_values:
   fluentbit:
     enable: true
@@ -66,12 +67,12 @@ capi_cluster_fluent_operator_values:
             secretKeyRef:
               name: opensearch-credentials
               key: username
-        logstashFormat: On
+        logstashFormat: true
         logstashPrefix: "kube_logs_{{ capi_cluster_release_name }}"
         replaceDots: true
         type: flb_type
         traceError: true
-        suppressTypeName: On
+        suppressTypeName: true
         timeKey: "@timestamp"
         tls:
           verify: false
@@ -113,7 +114,7 @@ capi_cluster_fluent_operator_values:
         enable: true
       systemd:
         enable: true
-    
+
     serviceMonitor:
       enable: true
       interval: 30s

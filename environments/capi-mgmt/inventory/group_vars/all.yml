@@ -67,7 +67,7 @@ capi_cluster_apiserver_floating_ip: true
 
 # By default, don't worry about failure domains
 capi_cluster_control_plane_omit_failure_domain: true
-capi_cluster_worker_failure_domain: ~
+capi_cluster_worker_failure_domain:
 
 # We don't need the ingress controller for a CAPI mgmt cluster
 ingress_controller_enabled: false

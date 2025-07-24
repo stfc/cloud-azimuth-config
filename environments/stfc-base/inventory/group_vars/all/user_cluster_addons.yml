@@ -1,10 +1,11 @@
+---
 azimuth_capi_operator_helm_addon_overrides:
   monitoring:
-        lokiStack:
-          release:
-            values:
-              promtail:
-                enabled: false
+    lokiStack:
+      release:
+        values:
+          promtail:
+            enabled: false
   custom:
     fluent-operator:
       kind: HelmRelease

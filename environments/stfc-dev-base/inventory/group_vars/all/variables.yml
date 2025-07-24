@@ -1,3 +1,4 @@
+---
 # common variables for azimuth instances running on STFC Cloud Staging 
 
 #############################################################################
@@ -7,7 +8,7 @@
 # allows us to keep all existing cloud-init security configuration  
 infra_image_id: ecf7eea6-9f55-4fcd-9ce5-bc171018655c # ubuntu-jammy-22.04-nogui
 
-infra_flavor_id: d314c1e5-a1be-4aae-97f4-a840d4f53428 # l3.xsmall 
+infra_flavor_id: d314c1e5-a1be-4aae-97f4-a840d4f53428 # l3.xsmall
 
 # Use the first available external network
 infra_external_network_id: "0dc30001-edfb-4137-be76-8e51f38fd650"
@@ -29,7 +30,7 @@ azimuth_openstack_verify_ssl: false
 #############################################################################
 # STFC Cloud CAPI Cluster Templates
 # set possible capi cluster templates for azimuth capi operator
-azimuth_capi_operator_images: 
+azimuth_capi_operator_images:
   capi-ubuntu-2204-kube-v1.27.16-2025-01-24:
     id: "64425be9-fbf1-4fa2-8e81-fe085f816039"
     kubernetes_version: "v1.27.16"
@@ -48,4 +49,3 @@ azimuth_capi_operator_images:
   capi-ubuntu-2204-kube-v1.32.4-2025-05-02:
     id: "bb88d8b3-1bf6-4cc0-9238-809b84114310"
     kubernetes_version: "v1.32.4"
-  

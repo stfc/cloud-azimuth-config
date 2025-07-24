@@ -1,11 +1,12 @@
+---
 capi_cluster_helm_addon_overrides:
   monitoring:
-        lokiStack:
-          enabled: true
-          release:
-            values:
-              promtail:
-                enabled: false
+    lokiStack:
+      enabled: true
+      release:
+        values:
+          promtail:
+            enabled: false
   custom:
     fluent-operator:
       kind: HelmRelease
