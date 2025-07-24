@@ -42,6 +42,14 @@ certmanager_enabled: yes
 # By default, only enable the cluster issuer when not using a wildcard certificate
 certmanager_acmehttp01issuer_enabled: "{{ not ingress_tls_wildcard_certificate }}"
 
+# By default, we use the OpenStack cloud provider
+azimuth_cloud_provider_type: openstack
+
+# Community images are not used when the null provider is configured
+community_images_enabled: "{{ azimuth_cloud_provider_type != 'null' }}"
+
+# Harbor is not used when the null provider is configured
+harbor_enabled: "{{ azimuth_cloud_provider_type != 'null' }}"
 # Create a mirror registry in Harbor for public Docker Hub images by default
 harbor_enabled: yes
 harbor_proxy_cache_default_projects:
@@ -62,14 +70,20 @@ velero_enabled: no
 # Indicates whether to install coral credits
 coral_credits_enabled: no
 
-# Azimuth features to enable
-azimuth_apps_enabled: yes
-azimuth_kubernetes_enabled: yes
-azimuth_clusters_enabled: yes
+# Azimuth features to enable
+# Apps (Kubernetes apps + Zenith) are always enabled
+azimuth_apps_enabled: true
+# Kubernetes and CaaS will not work with the null cloud provider
+azimuth_kubernetes_enabled: "{{ azimuth_cloud_provider_type != 'null' }}"
+azimuth_clusters_enabled: "{{ azimuth_cloud_provider_type != 'null' }}"
+
+# Indicates whether to install FluxCD on management cluster 
+# (required to install Flux-based addons)
+flux_enabled: false
 
 # The base domain for Azimuth ingress resources
 # This should be set by the concrete environment
-ingress_base_domain: "{{ undef(hint = 'ingress_base_domain is required') }}"
+ingress_base_domain: "{{ undef(hint='ingress_base_domain is required') }}"
 # The subdomain that should be used for the portal
 ingress_azimuth_portal_subdomain: portal
 # The subdomain that should be used for the registrar
@@ -78,7 +92,7 @@ ingress_zenith_registrar_subdomain: registrar
 ingress_harbor_core_subdomain: registry
 # The subdomain that should be used for the Harbor notary
 ingress_harbor_notary_subdomain: notary
-# The subdomain that should be used for Keycloak
+# The subdomain that should be used for Keycloak
 ingress_keycloak_subdomain: identity
 # The subdomain that should be used for Grafana
 ingress_grafana_subdomain: grafana
@@ -105,18 +119,18 @@ ingress_annotations:
 
 # A pre-existing wildcard certificate and key for the base domain
 # These should be dropped in to the environment as {environment}/tls/tls.{crt,key}
-#   The certificate file is allowed not to exist, as usage is gated on it
+#   The certificate file is allowed not to exist, as usage is gated on it
 ingress_tls_wildcard_certificate_file: "{{ (azimuth_config_environment_root, 'tls', 'tls.crt') | path_join }}"
-#   We ignore errors from the lookup as the file is allowed not to exist
-#   In that case, we use cert-manager annotations if available, else TLS is disabled
-ingress_tls_wildcard_certificate: "{{ lookup('file', ingress_tls_wildcard_certificate_file, errors = 'ignore') or None }}"
-#   The key file must exist, but is only used when the certificate file is present
+# We ignore errors from the lookup as the file is allowed not to exist
+# In that case, we use cert-manager annotations if available, else TLS is disabled
+ingress_tls_wildcard_certificate: "{{ lookup('file', ingress_tls_wildcard_certificate_file, errors='ignore') or None }}"
+# The key file must exist, but is only used when the certificate file is present
 ingress_tls_wildcard_key_file: "{{ (azimuth_config_environment_root, 'tls', 'tls.key') | path_join }}"
 ingress_tls_wildcard_key: "{{ lookup('file', ingress_tls_wildcard_key_file) }}"
 
 # TLS-related annotations, e.g. for cert-manager
 # If cert-manager + the cluster issuer are enabled, the required annotation to use the issuer
-# will be picked up by default
+# will be picked up by default
 # If specified, the wildcard certificate will take precedence over this
 ingress_tls_annotations: >-
   {{
@@ -139,7 +153,7 @@ __os_cloud: >-
       default = undef(hint = 'OS_CLOUD is not set')
     )
   }}
-#   This is the local path to the application credential
+#   This is the local path to the application credential
 __os_clouds_file: >-
   {{-
     lookup(
@@ -152,7 +166,7 @@ __os_auth_url: >-
   {{-
     lookup('file', __os_clouds_file) |
       from_yaml |
-      json_query('clouds.' + __os_cloud + '.auth.auth_url') |
+      json_query('clouds.' + '"%s"' % __os_cloud + '.auth.auth_url') |
       trim('/')
   }}
 azimuth_openstack_auth_url: "{{ __os_auth_url.removesuffix('/v3') }}/v3"
@@ -180,7 +194,7 @@ capi_cluster_external_network_id: "{{ infra_external_network_id }}"
 azimuth_capi_operator_external_network_id: "{{ infra_external_network_id }}"
 
 # If there is only one load balancer provider, use it by default
-# Note that 'octavia' is excluded as it is an alias of 'amphora'
+# Note that 'octavia' is excluded as it is an alias of 'amphora'
 __os_loadbalancer_providers: >-
   {{-
     lookup('pipe', 'openstack loadbalancer provider list -f json') |
