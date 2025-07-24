@@ -57,52 +57,37 @@ azimuth_caas_stackhpc_slurm_appliance_extra_vars_overrides: "{{ stfc_compliance_
 # STFC Cloud CAPI Cluster Templates
  
 # set possible capi cluster templates for azimuth capi operator
-azimuth_capi_operator_images: 
-  capi-ubuntu-2204-kube-v1.32.4-2025-05-02:
-    id: "71708eba-0468-4cd9-ae07-aeaa04bb728d"
-    kubernetes_version: "v1.32.4"
-  capi-ubuntu-2204-kube-v1.31.8-2025-05-02:
-    id: "17378d8d-95bd-484d-beb7-a3bd205d911b"
-    kubernetes_version: "v1.31.8"
-  capi-ubuntu-2204-kube-v1.30.12-2025-05-02:
-    id: "06aef37d-330c-4493-ac86-70a4b7d1456b"
-    kubernetes_version: "v1.30.12"
-  capi-ubuntu-2204-kube-v1.29.15-2025-05-02:
-    id: "68b0815b-1e4e-40e0-a44f-2733051f4213"
-    kubernetes_version: "v1.29.15"
-  capi-ubuntu-2204-kube-v1.28.15-2025-05-02:
-    id: "2bbbe720-a88f-40e4-9cff-8993a8731ea8"
-    kubernetes_version: "v1.28.15"
-  capi-ubuntu-2204-kube-v1.27.16-2025-01-24:
-    id: "9534ef59-d17d-4d48-84b5-2e67f9d7a13f"
-    kubernetes_version: "v1.27.6"
+capi_image_list:
+  - "capi-ubuntu-2204-kube-v1.32.4-2025-05-02"
+  - "capi-ubuntu-2204-kube-v1.31.8-2025-05-02"
 
 azimuth_capi_operator_cluster_templates_extra: |-
   {
-    {% for key, image in azimuth_capi_operator_images.items() %}
-    {% if "kubernetes_version" in image %}
-    {% set kube_vn_no_prefix = image.kubernetes_version | regex_replace('^v', '') %}
-    {% set kube_vn_dash = kube_vn_no_prefix | replace('.', '-') %}
-    "kube-{{ kube_vn_dash }}": {
+    {% for image in capi_image_list %}
+    {% set image_id = (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', image))[0].ID | string() %}
+    {% set kube_version_dot_v = image | regex_search( 'v[0-9][.][0-9]*[.][0-9]*' ) | string() %}
+    {% set kube_version_dot = image | regex_search( '[0-9][.][0-9]*[.][0-9]*' ) | string() %}
+    {% set kube_version = kube_version_dot | replace('.', '-') | string() %}
+    "kube-{{ kube_version }}": {
       "annotations": {{ azimuth_capi_operator_cluster_template_annotations }},
       "spec": {{
         azimuth_capi_operator_cluster_template_defaults |
           combine(
             {
-              "label": image.kubernetes_version,
-              "description": "Kubernetes " ~ kube_vn_no_prefix ~ " with HA control plane.",
+              "label": kube_version_dot_v,
+              "description": "Kubernetes " ~ kube_version_dot_v ~ " with HA control plane.",
               "values": {
-                "kubernetesVersion": kube_vn_no_prefix,
-                "machineImageId": image.id,
+                "kubernetesVersion": kube_version_dot,
+                "machineImageId": image_id,
               },
             },
             recursive = True
           )
       }},
     },
-    {% endif %}
     {% endfor %}
   }
+
 
 #############################################################################
 # Configuration for the seed node (HA) or single node
@@ -123,7 +108,8 @@ infra_data_volume_size: 100
 
 # use a pre-existing STFC Cloud image rather than a community one
 # allows us to keep all existing cloud-init security configuration  
-infra_image_id: c3d34093-2895-4616-99ae-3713ac2df586 # ubuntu-jammy-22.04-nogui
+infra_image_name: "ubuntu-jammy-22.04-nogui"
+infra_image_id: "{{ (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', infra_image_name ))[0].ID }}"
 
 #############################################################################
 # Configuration for Azimuth Cluster Operator
