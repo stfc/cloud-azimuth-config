@@ -1,3 +1,4 @@
+---
 site_name: Azimuth Operator Documentation
 repo_url: https://github.com/azimuth-cloud/azimuth-config
 copyright: Copyright &copy; StackHPC 2022
@@ -37,6 +38,8 @@ nav:
       - deployment/index.md
       - deployment/automation.md
       - deployment/testing.md
+  - Operations:
+      - operations/maintenance.md
   - Debugging:
       - debugging/index.md
       - debugging/access-k3s.md
