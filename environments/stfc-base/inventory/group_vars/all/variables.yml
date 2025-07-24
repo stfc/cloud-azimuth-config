@@ -153,7 +153,7 @@ azimuth_clusters_enabled: yes
 # The name of the current cloud
 azimuth_current_cloud_name: stfc-cloud
 # The label for the current cloud
-azimuth_current_cloud_label: STFC Cloud
+azimuth_current_cloud_label: STFC Cloud Azimuth Platform
 
 #############################################################################
 # Configuration of authenticators / authentication methods
@@ -177,3 +177,53 @@ azimuth_authenticator_federated_enabled: yes
 azimuth_authenticator_federated_provider: "openid"
 azimuth_authenticator_federated_protocol: "openid"
 azimuth_authenticator_federated_label: Login using IAM
+
+azimuth_theme_bootstrap_css_url: https://bootswatch.com/5/zephyr/bootstrap.css
+
+azimuth_theme_custom_css: |
+  : root {
+    --bs-primary: #ff5733;
+  }
+
+  .navbar {
+    background-color: var(--bs-primary) !important;
+  }
+
+  .navbar .navbar-brand,
+  .navbar .nav-link,
+  .navbar .navbar-text {
+    color: var(--bs-light) !important;
+  }
+
+  .modal pre {
+    background-color: var(--bs-primary);
+    color: var(--bs-light);
+    padding: 1rem;
+    max-height: 400px;
+    overflow: scroll;
+  }
+
+  .sticky-footer a {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+  }
+
+  .sticky-footer a::before {
+    content: '';
+    display: inline-block;
+    width: 220px;
+    height: 60px;
+    background-image: url('https://www.ukri.org/wp-content/themes/ukri/assets/img/ukri-stfc-standard-logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+  }
+
+  .sticky-footer a img {
+    height: 60px;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
