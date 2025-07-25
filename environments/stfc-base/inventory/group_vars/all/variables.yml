@@ -182,8 +182,8 @@ azimuth_authenticator_federated_label: Login using IAM
 azimuth_theme_bootstrap_css_url: https://bootswatch.com/5/zephyr/bootstrap.css
 
 azimuth_theme_custom_css: |-
-  : root {
-    --bs-primary: #ff5733;
+  :root {
+    --bs-primary: #325ffc !important;
   }
 
   .navbar {
@@ -197,7 +197,7 @@ azimuth_theme_custom_css: |-
   }
 
   .modal pre {
-    background-color: var(--bs-primary);
+    background-color: var(--bs-primary) !important;
     color: var(--bs-light);
     padding: 1rem;
     max-height: 400px;
