@@ -56,7 +56,7 @@ capi_cluster_fluent_operator_values:
       opensearch:
         # TODO change this to point to opensearch "olaf" cluster (SCD department cluster)
         host: opensearch.staging-worker.nubes.stfc.ac.uk
-        port: 9200
+        port: 443
         httpPassword:
           valueFrom:
             secretKeyRef:
