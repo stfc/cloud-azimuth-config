@@ -1,3 +1,4 @@
+---
 # common variables for all stfc environments - stfc-development, stfc-production, stfc-staging 
 
 #############################################################################
@@ -7,12 +8,12 @@ community_images_custom_properties:
   - "hw_scsi_model=virtio-scsi"
   - "hw_disk_bus=scsi"
 
-
 # don't want any kubernetes images so ignore them
 # we use our own capi images
 community_images_azimuth_images_manifest: >-
- {{ lookup('url', community_images_azimuth_images_manifest_url, split_lines = False) | from_json | dict2items | rejectattr('key', 'match', '^kubernetes.*') | items2dict }}
- 
+  {{ lookup('url', community_images_azimuth_images_manifest_url, split_lines = False) | from_json | dict2items | rejectattr('key', 'match', '^kubernetes.*') | items2dict
+  }}
+
 # prefix all azimuth community image names with azimuth-* 
 parsed_community_images: >-
   {% set result = {} %}
@@ -27,7 +28,8 @@ parsed_community_images: >-
   {{ result }}
 
 # convert string outputted by jinja into a dictionary
-community_images: "{{ parsed_community_images | replace('\"', '') | trim }}"
+# community_images: "{{ parsed_community_images | replace('\"', '') | trim }}"
+community_images: {}
 
 #############################################################################
 # Ansible Playbooks For STFC Security Compliance 
@@ -55,7 +57,7 @@ azimuth_caas_stackhpc_slurm_appliance_extra_vars_overrides: "{{ stfc_compliance_
 
 #############################################################################
 # STFC Cloud CAPI Cluster Templates
- 
+
 # set possible capi cluster templates for azimuth capi operator
 capi_image_list:
   - "capi-ubuntu-2204-kube-v1.32.4-2025-05-02"
@@ -100,7 +102,7 @@ infra_external_network_id: "5283f642-8bd8-48b6-8608-fa3006ff4539"
 # The id of the flavor to use for the node
 # For a seed node for an HA cluster, 8GB RAM is fine (maybe even 4GB)
 # For a single node deployment, >= 16GB RAM is recommended
-infra_flavor_id: "f120e108-7883-4933-bb76-4f88909447f6"  # l6.c4 (4 vCPU, ~15GB RAM, 75GB disk)
+infra_flavor_id: "f120e108-7883-4933-bb76-4f88909447f6" # l6.c4 (4 vCPU, ~15GB RAM, 75GB disk)
 
 # The size in GB for the data volume
 # This will hold all cluster data, including Kubernetes resources, and also PVC data
@@ -119,17 +121,16 @@ infra_image_id: "{{ (lookup('pipe', 'openstack image list -c Name -c ID -f json'
 azimuth_capi_operator_capi_helm_control_plane_count: 5
 
 # adding some extra capi helm values that aren't templated out as ansible variables
-azimuth_capi_operator_capi_helm_values_overrides: 
+azimuth_capi_operator_capi_helm_values_overrides:
   controlPlane:
     machineCount: "{{ azimuth_capi_operator_capi_helm_control_plane_count }}"
   clusterNetworking:
     internalNetwork:
       nodeCidr: 192.168.128.0/17
-  registryMirrors: 
-    docker.io: 
+  registryMirrors:
+    docker.io:
       - "https://dockerhub.stfc.ac.uk"
   addons: "{{ azimuth_capi_operator_helm_addon_overrides }}"
-
 
 azimuth_capi_operator_capi_helm_pods_cidr: 10.0.0.0/13
 azimuth_capi_operator_capi_helm_services_cidr: 10.8.0.0/13
@@ -138,17 +139,17 @@ azimuth_capi_operator_capi_helm_openstack_loadbalancer_provider: amphora
 azimuth_capi_operator_capi_helm_csi_cinder_default_availability_zone: ceph
 
 azimuth_capi_operator_capi_helm_control_plane_omit_failure_domain: true
-azimuth_capi_operator_capi_helm_worker_failure_domain: null
+azimuth_capi_operator_capi_helm_worker_failure_domain:
 
 #############################################################################
 # Azimuth configuration
 
 # Indicates if the Zenith app proxy should be enabled
-azimuth_apps_enabled: yes
+azimuth_apps_enabled: true
 # Indicates if Kubernetes support should be enabled
-azimuth_kubernetes_enabled: yes
+azimuth_kubernetes_enabled: true
 # Indicates if Cluster-as-a-Service (CaaS) should be enabled
-azimuth_clusters_enabled: yes
+azimuth_clusters_enabled: false
 
 # The name of the current cloud
 azimuth_current_cloud_name: stfc-cloud
@@ -173,16 +174,16 @@ azimuth_authenticator_appcred_enabled: false
 # The label for the appcred authenticator
 azimuth_authenticator_appcred_label: "Application Credential"
 
-azimuth_authenticator_federated_enabled: yes
+azimuth_authenticator_federated_enabled: true
 azimuth_authenticator_federated_provider: "openid"
 azimuth_authenticator_federated_protocol: "openid"
 azimuth_authenticator_federated_label: Login using IAM
 
 azimuth_theme_bootstrap_css_url: https://bootswatch.com/5/zephyr/bootstrap.css
 
-azimuth_theme_custom_css: |
-  : root {
-    --bs-primary: #ff5733;
+azimuth_theme_custom_css: |-
+  :root {
+    --bs-primary: #325ffc !important;
   }
 
   .navbar {
@@ -196,7 +197,7 @@ azimuth_theme_custom_css: |
   }
 
   .modal pre {
-    background-color: var(--bs-primary);
+    background-color: var(--bs-primary) !important;
     color: var(--bs-light);
     padding: 1rem;
     max-height: 400px;
