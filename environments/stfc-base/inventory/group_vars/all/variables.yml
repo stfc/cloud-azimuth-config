@@ -179,6 +179,8 @@ azimuth_authenticator_federated_provider: "openid"
 azimuth_authenticator_federated_protocol: "openid"
 azimuth_authenticator_federated_label: Login using IAM
 
+azimuth_documentation_url: https://stfc.github.io/cloud-azimuth-user-docs/
+
 azimuth_theme_bootstrap_css_url: https://bootswatch.com/5/zephyr/bootstrap.css
 
 azimuth_theme_custom_css: |-
