@@ -1,3 +1,4 @@
+---
 #############################################################################
 # Configuration for the HA cluster
 
@@ -10,7 +11,6 @@ zenith_sshd_service_load_balancer_ip: "130.246.80.24"
 # The base domain to use for ingress resources
 ingress_base_domain: "apps.cape.stfc.ac.uk"
 
-
 ##################################################################################
 # STFC Security policy - disable 3rd party images
 # Azimuth caas operator is tightly coupled with 3rd party images - disable apps on production until fixed
@@ -20,4 +20,4 @@ azimuth_clusters_enabled: false
 community_images_default_visibility: private
 
 # Disable ssh-workstations
-azimuth_caas_workstation_ssh_enabled: no
+azimuth_caas_workstation_ssh_enabled: false

@@ -62,6 +62,9 @@ settings = deep_merge(
                 # The namespace of the Helm release for the component
                 "release_namespace": "azimuth",
             },
+            "azimuth-apps-operator": {
+                "release_namespace": "azimuth",
+            },
             "azimuth-caas-operator": {
                 "release_namespace": "azimuth",
             },
@@ -75,7 +78,7 @@ settings = deep_merge(
                 "release_namespace": "azimuth",
             },
             "coral-credits": {
-                "release_namespace": "coral-credits",
+                "release_namespace": "azimuth",
             },
             "cluster-api-addon-provider": {
                 "release_namespace": "capi-addon-system",

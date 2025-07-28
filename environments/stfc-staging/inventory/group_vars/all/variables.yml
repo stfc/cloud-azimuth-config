@@ -1,3 +1,4 @@
+---
 #############################################################################
 # Configuration for the HA cluster
 
@@ -18,7 +19,7 @@ azimuth_openstack_verify_ssl: false
 
 # deny creation of any platforms on any tenancies other than azimuth-staging
 # prevents unauthorized users using staging - as its meant for testing things
-platforms_tenancy_allow_list: 
+platforms_tenancy_allow_list:
   - 3a9266ccea8c4e84a488636d84c0c2c7 # azimuth-staging
 
 ##################################################################################
@@ -30,4 +31,4 @@ azimuth_clusters_enabled: false
 community_images_default_visibility: private
 
 # Disable ssh-workstations
-azimuth_caas_workstation_ssh_enabled: no
+azimuth_caas_workstation_ssh_enabled: false

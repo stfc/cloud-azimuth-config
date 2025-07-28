@@ -1,3 +1,4 @@
+---
 # common variables for all stfc environments - stfc-development, stfc-production, stfc-staging 
 
 #############################################################################
@@ -7,12 +8,12 @@ community_images_custom_properties:
   - "hw_scsi_model=virtio-scsi"
   - "hw_disk_bus=scsi"
 
-
 # don't want any kubernetes images so ignore them
 # we use our own capi images
 community_images_azimuth_images_manifest: >-
- {{ lookup('url', community_images_azimuth_images_manifest_url, split_lines = False) | from_json | dict2items | rejectattr('key', 'match', '^kubernetes.*') | items2dict }}
- 
+  {{ lookup('url', community_images_azimuth_images_manifest_url, split_lines = False) | from_json | dict2items | rejectattr('key', 'match', '^kubernetes.*') | items2dict
+  }}
+
 # prefix all azimuth community image names with azimuth-* 
 parsed_community_images: >-
   {% set result = {} %}
@@ -27,7 +28,8 @@ parsed_community_images: >-
   {{ result }}
 
 # convert string outputted by jinja into a dictionary
-community_images: "{{ parsed_community_images | replace('\"', '') | trim }}"
+# community_images: "{{ parsed_community_images | replace('\"', '') | trim }}"
+community_images: {}
 
 #############################################################################
 # Ansible Playbooks For STFC Security Compliance 
@@ -55,54 +57,39 @@ azimuth_caas_stackhpc_slurm_appliance_extra_vars_overrides: "{{ stfc_compliance_
 
 #############################################################################
 # STFC Cloud CAPI Cluster Templates
- 
+
 # set possible capi cluster templates for azimuth capi operator
-azimuth_capi_operator_images: 
-  capi-ubuntu-2204-kube-v1.32.4-2025-05-02:
-    id: "71708eba-0468-4cd9-ae07-aeaa04bb728d"
-    kubernetes_version: "v1.32.4"
-  capi-ubuntu-2204-kube-v1.31.8-2025-05-02:
-    id: "17378d8d-95bd-484d-beb7-a3bd205d911b"
-    kubernetes_version: "v1.31.8"
-  capi-ubuntu-2204-kube-v1.30.12-2025-05-02:
-    id: "06aef37d-330c-4493-ac86-70a4b7d1456b"
-    kubernetes_version: "v1.30.12"
-  capi-ubuntu-2204-kube-v1.29.15-2025-05-02:
-    id: "68b0815b-1e4e-40e0-a44f-2733051f4213"
-    kubernetes_version: "v1.29.15"
-  capi-ubuntu-2204-kube-v1.28.15-2025-05-02:
-    id: "2bbbe720-a88f-40e4-9cff-8993a8731ea8"
-    kubernetes_version: "v1.28.15"
-  capi-ubuntu-2204-kube-v1.27.16-2025-01-24:
-    id: "9534ef59-d17d-4d48-84b5-2e67f9d7a13f"
-    kubernetes_version: "v1.27.6"
+capi_image_list:
+  - "capi-ubuntu-2204-kube-v1.32.4-2025-05-02"
+  - "capi-ubuntu-2204-kube-v1.31.8-2025-05-02"
 
 azimuth_capi_operator_cluster_templates_extra: |-
   {
-    {% for key, image in azimuth_capi_operator_images.items() %}
-    {% if "kubernetes_version" in image %}
-    {% set kube_vn_no_prefix = image.kubernetes_version | regex_replace('^v', '') %}
-    {% set kube_vn_dash = kube_vn_no_prefix | replace('.', '-') %}
-    "kube-{{ kube_vn_dash }}": {
+    {% for image in capi_image_list %}
+    {% set image_id = (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', image))[0].ID | string() %}
+    {% set kube_version_dot_v = image | regex_search( 'v[0-9][.][0-9]*[.][0-9]*' ) | string() %}
+    {% set kube_version_dot = image | regex_search( '[0-9][.][0-9]*[.][0-9]*' ) | string() %}
+    {% set kube_version = kube_version_dot | replace('.', '-') | string() %}
+    "kube-{{ kube_version }}": {
       "annotations": {{ azimuth_capi_operator_cluster_template_annotations }},
       "spec": {{
         azimuth_capi_operator_cluster_template_defaults |
           combine(
             {
-              "label": image.kubernetes_version,
-              "description": "Kubernetes " ~ kube_vn_no_prefix ~ " with HA control plane.",
+              "label": kube_version_dot_v,
+              "description": "Kubernetes " ~ kube_version_dot_v ~ " with HA control plane.",
               "values": {
-                "kubernetesVersion": kube_vn_no_prefix,
-                "machineImageId": image.id,
+                "kubernetesVersion": kube_version_dot,
+                "machineImageId": image_id,
               },
             },
             recursive = True
           )
       }},
     },
-    {% endif %}
     {% endfor %}
   }
+
 
 #############################################################################
 # Configuration for the seed node (HA) or single node
@@ -115,7 +102,7 @@ infra_external_network_id: "5283f642-8bd8-48b6-8608-fa3006ff4539"
 # The id of the flavor to use for the node
 # For a seed node for an HA cluster, 8GB RAM is fine (maybe even 4GB)
 # For a single node deployment, >= 16GB RAM is recommended
-infra_flavor_id: "f120e108-7883-4933-bb76-4f88909447f6"  # l6.c4 (4 vCPU, ~15GB RAM, 75GB disk)
+infra_flavor_id: "f120e108-7883-4933-bb76-4f88909447f6" # l6.c4 (4 vCPU, ~15GB RAM, 75GB disk)
 
 # The size in GB for the data volume
 # This will hold all cluster data, including Kubernetes resources, and also PVC data
@@ -123,7 +110,8 @@ infra_data_volume_size: 100
 
 # use a pre-existing STFC Cloud image rather than a community one
 # allows us to keep all existing cloud-init security configuration  
-infra_image_id: c3d34093-2895-4616-99ae-3713ac2df586 # ubuntu-jammy-22.04-nogui
+infra_image_name: "ubuntu-jammy-22.04-nogui"
+infra_image_id: "{{ (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', infra_image_name ))[0].ID }}"
 
 #############################################################################
 # Configuration for Azimuth Cluster Operator
@@ -133,15 +121,16 @@ infra_image_id: c3d34093-2895-4616-99ae-3713ac2df586 # ubuntu-jammy-22.04-nogui
 azimuth_capi_operator_capi_helm_control_plane_count: 5
 
 # adding some extra capi helm values that aren't templated out as ansible variables
-azimuth_capi_operator_capi_helm_values_overrides: 
+azimuth_capi_operator_capi_helm_values_overrides:
   controlPlane:
     machineCount: "{{ azimuth_capi_operator_capi_helm_control_plane_count }}"
   clusterNetworking:
     internalNetwork:
       nodeCidr: 192.168.128.0/17
-  registryMirrors: 
-    docker.io: 
+  registryMirrors:
+    docker.io:
       - "https://dockerhub.stfc.ac.uk"
+  addons: "{{ azimuth_capi_operator_helm_addon_overrides }}"
 
 azimuth_capi_operator_capi_helm_pods_cidr: 10.0.0.0/13
 azimuth_capi_operator_capi_helm_services_cidr: 10.8.0.0/13
@@ -150,22 +139,22 @@ azimuth_capi_operator_capi_helm_openstack_loadbalancer_provider: amphora
 azimuth_capi_operator_capi_helm_csi_cinder_default_availability_zone: ceph
 
 azimuth_capi_operator_capi_helm_control_plane_omit_failure_domain: true
-azimuth_capi_operator_capi_helm_worker_failure_domain: null
+azimuth_capi_operator_capi_helm_worker_failure_domain:
 
 #############################################################################
 # Azimuth configuration
 
 # Indicates if the Zenith app proxy should be enabled
-azimuth_apps_enabled: yes
+azimuth_apps_enabled: true
 # Indicates if Kubernetes support should be enabled
-azimuth_kubernetes_enabled: yes
+azimuth_kubernetes_enabled: true
 # Indicates if Cluster-as-a-Service (CaaS) should be enabled
-azimuth_clusters_enabled: yes
+azimuth_clusters_enabled: false
 
 # The name of the current cloud
 azimuth_current_cloud_name: stfc-cloud
 # The label for the current cloud
-azimuth_current_cloud_label: STFC Cloud
+azimuth_current_cloud_label: STFC Cloud Azimuth Platform
 
 #############################################################################
 # Configuration of authenticators / authentication methods
@@ -185,7 +174,57 @@ azimuth_authenticator_appcred_enabled: false
 # The label for the appcred authenticator
 azimuth_authenticator_appcred_label: "Application Credential"
 
-azimuth_authenticator_federated_enabled: yes
+azimuth_authenticator_federated_enabled: true
 azimuth_authenticator_federated_provider: "openid"
 azimuth_authenticator_federated_protocol: "openid"
 azimuth_authenticator_federated_label: Login using IAM
+
+azimuth_theme_bootstrap_css_url: https://bootswatch.com/5/zephyr/bootstrap.css
+
+azimuth_theme_custom_css: |-
+  :root {
+    --bs-primary: #325ffc !important;
+  }
+
+  .navbar {
+    background-color: var(--bs-primary) !important;
+  }
+
+  .navbar .navbar-brand,
+  .navbar .nav-link,
+  .navbar .navbar-text {
+    color: var(--bs-light) !important;
+  }
+
+  .modal pre {
+    background-color: var(--bs-primary) !important;
+    color: var(--bs-light);
+    padding: 1rem;
+    max-height: 400px;
+    overflow: scroll;
+  }
+
+  .sticky-footer a {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+  }
+
+  .sticky-footer a::before {
+    content: '';
+    display: inline-block;
+    width: 220px;
+    height: 60px;
+    background-image: url('https://www.ukri.org/wp-content/themes/ukri/assets/img/ukri-stfc-standard-logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+  }
+
+  .sticky-footer a img {
+    height: 60px;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
