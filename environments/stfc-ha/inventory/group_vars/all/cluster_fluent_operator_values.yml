@@ -53,31 +53,7 @@ capi_cluster_fluent_operator_values:
       #   tag: "fb.metrics"
 
     output:
-      opensearch:
-        # TODO change this to point to opensearch "olaf" cluster (SCD department cluster)
-        host: opensearch.staging-worker.nubes.stfc.ac.uk
-        port: 443
-        httpPassword:
-          valueFrom:
-            secretKeyRef:
-              name: opensearch-credentials
-              key: password
-        httpUser:
-          valueFrom:
-            secretKeyRef:
-              name: opensearch-credentials
-              key: username
-        logstashFormat: true
-        logstashPrefix: "kube_logs_{{ capi_cluster_release_name }}"
-        replaceDots: true
-        type: flb_type
-        traceError: true
-        suppressTypeName: true
-        timeKey: "@timestamp"
-        tls:
-          verify: false
-          debug: 1
-
+      opensearch: "{{ fluent_operator_cluster_opensearch_config }}"
       loki:
         enable: true
         host: loki-stack
