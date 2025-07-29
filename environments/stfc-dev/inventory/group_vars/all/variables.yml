@@ -24,3 +24,8 @@ azimuth_clusters_enabled: false
 
 #Disables pulling community images, remove line to pull images
 community_images: {}
+
+# Disable opensearch output on dev instances
+fluent_operator_user_opensearch_config: {}
+user_cluster_logging_user: 
+user_cluster_logging_pass: 

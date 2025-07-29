@@ -1,0 +1,23 @@
+fluent_operator_user_opensearch_config:
+  host: "{{ fluent_operator_user_opensearch_host }}"
+  port: "{{ fluent_operator_user_opensearch_host }}"
+  httpPassword:
+    valueFrom:
+      secretKeyRef:
+        name: opensearch-credentials
+        key: password
+  httpUser:
+    valueFrom:
+      secretKeyRef:
+        name: opensearch-credentials
+        key: username
+  logstashFormat: true
+  logstashPrefix: "{{ fluent_operator_user_opensearch_logstash_prefix }}"
+  replaceDots: true
+  type: flb_type
+  traceError: true
+  suppressTypeName: true
+  timeKey: "@timestamp"
+  tls:
+    verify: false
+    debug: 1
