@@ -15,6 +15,9 @@ azimuth_openstack_verify_ssl: false
 community_images_default_visibility: private
 community_images_update_existing_visibility: true
 
+# Set user cluster control plane count to 1 on dev, reduce quota requirement
+azimuth_capi_operator_capi_helm_control_plane_count: 1
+
 # deny creation of any platforms on any tenancies other than what is listed
 # prevents unauthorized users using azimuth dev instances - as its meant for developing features and testing things 
 platforms_tenancy_allow_list: < project ID >
