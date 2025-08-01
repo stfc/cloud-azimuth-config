@@ -11,6 +11,8 @@ azimuth_capi_operator_app_templates_jupyterhub_default_values:
         enabled: false
 
     singleuser:
+      startTimeout: 1200 # Increase as GPU image is large. Needs to be global instead of "per profile" due to bug:
+      # https://discourse.jupyter.org/t/spawn-failed-timeout-even-when-start-timeout-is-set-to-3600-seconds/8098
       profileList:
         - display_name: "Python environment (minimal)"
           description: "Minimal Python environment"
@@ -26,9 +28,26 @@ azimuth_capi_operator_app_templates_jupyterhub_default_values:
             Support for GPU-enabled machine learning in Python.
             JupyterLab servers of this type will only start on node groups
             including nodes that have access to an NVIDIA GPU.
+            [It may take 5-10 minutes for the gpu-operator to install required
+            CUDA drivers on newly provisioned GPU nodes, until there may not be GPU capacity/
+            no nodes may match the GPU-requirement affinity/selector.]
           kubespawner_override:
             image: cschranz/gpu-jupyter:v1.9_cuda-12.6_ubuntu-24.04_python-only
-            node_selector: { "nvidia.com/gpu.present": "true" }
+            # Guarantee is required, this has the added effect of ensuring scheduling only happens
+            # after GPU operator has finished installing drivers etc, as it sets capacity
+            # after it is done. It also prevents autoscaling when a node is already in initial setup
+            extra_resource_guarantees: {"nvidia.com/gpu": "1"}
+            # A limit is required else it errors. "Limit must be set for non overcommitable resources". Can increase if needed.
+            extra_resource_limits: {"nvidia.com/gpu": "1"} 
+            # Only attempt spawning on GPU-enabled node groups
+            node_affinity_required:
+              - matchExpressions:
+                  - key: nvidia.com/gpu.present
+                    operator: Exists
+            tolerations: # Incase we add taint in future to reduce uncessary GPU usage. See nvidiaGPUOperator.release.values.node-feature-discovery.master.config.enableTaints.
+              - key: "nvidia.com/gpu"
+                operator: "Exists"
+                effect: "NoSchedule"
     # TODO: Add custom image option, take details from azimuth-ui.schema.yaml
     # Might need to fork for that...
     hub:
