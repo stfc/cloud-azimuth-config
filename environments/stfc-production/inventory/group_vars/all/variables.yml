@@ -21,3 +21,24 @@ community_images_default_visibility: private
 
 # Disable ssh-workstations
 azimuth_caas_workstation_ssh_enabled: false
+
+##################################################################################
+# Fluent Operator Opensearch Config
+fluent_operator_cluster_opensearch_host: opensearch.staging-worker.nubes.stfc.ac.uk
+fluent_operator_user_opensearch_host: opensearch.staging-worker.nubes.stfc.ac.uk
+
+fluent_operator_cluster_opensearch_port: 443
+fluent_operator_user_opensearch_port: 443
+
+fluent_operator_cluster_opensearch_logstash_prefix: "kube_logs_{{ capi_cluster_release_name }}"
+# At the time of writing, custom addons have templating disabled:
+  # https://github.com/azimuth-cloud/capi-helm-charts/blob/affae0544b07c4b2e641b3b5bf990e561c055a91/charts/cluster-addons/templates/custom-addons.yaml#L15
+  # 1. Temporarily re-enable templating with an endraw
+  # 2. Template for Openstack Project ID by base64 decoding the user info from the cloud_credentials secret
+  #    a. https://github.com/azimuth-cloud/cluster-api-addon-provider/tree/main?tab=readme-ov-file#templates
+  #    b. Note, the "cluster" and "infra_cluster" are CRD types cluster.cluster.x-k8s.io and openstackcluster.infrastructure.cluster.x-k8s.io; not clusters.azimuth.stackhpc.com
+  # 3. Template for the Kubernetes UID of the cluster object, for it to be unique to the project
+  # 4. Re-disable templating
+fluent_operator_user_opensearch_logstash_prefix: "{{ '{%- endraw %}' }}{% raw %}kube_logs_azimuth_user_cluster_{{ cluster.metadata.uid }}_projectid_{{ (cloud_identity.data[\"user_info.yaml\"] | b64decode
+    | fromyaml).project_id }}{% endraw %}{{ '{%- raw %}' }}"
+##################################################################################
