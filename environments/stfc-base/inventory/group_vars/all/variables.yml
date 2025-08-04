@@ -198,14 +198,6 @@ azimuth_theme_custom_css: |-
     color: var(--bs-light) !important;
   }
 
-  .modal pre {
-    background-color: var(--bs-primary) !important;
-    color: var(--bs-light);
-    padding: 1rem;
-    max-height: 400px;
-    overflow: scroll;
-  }
-
   .sticky-footer a {
     display: inline-flex;
     align-items: center;
