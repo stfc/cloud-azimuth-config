@@ -93,6 +93,38 @@ capi_cluster_alertmanager_values:
       # opsgenie_configs:
       #  - # https://prometheus.io/docs/alerting/latest/configuration/#opsgenie_config
       # Defaults here: https://github.com/prometheus/alertmanager/blob/c653800ffe4af31f4c3f9d81708301f3dd5600fa/template/default.tmpl#L43
+    - name: 'slack-receiver'
+      slack_configs:
+        # Whether to notify about resolved alerts.
+        send_resolved: false
+        # The Slack webhook URL. Either api_url or api_url_file should be set.
+        # Defaults to global settings if none are set here.
+        api_url: 
+        api_url_file: 
+        # The channel or user to send notifications to.
+        channel: 
+        # API request data as defined by the Slack webhook API.
+        icon_emoji: 
+        icon_url: 
+        link_names: 
+        username: 
+        # The following parameters define the attachment.
+        actions:
+          callback_id: 
+          color: 
+          fallback: 
+        fields:
+          footer: 
+          mrkdwn_in: 
+          pretext: 
+          short_fields: 
+          text: 
+          title: 
+          title_link: 
+          image_url: 
+          thumb_url: 
+        # The HTTP client's configuration.
+        http_config: 
 
   templates:
     - "/etc/alertmanager/config/*.tmpl"

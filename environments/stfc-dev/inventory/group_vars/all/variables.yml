@@ -28,6 +28,10 @@ azimuth_clusters_enabled: false
 #Disables pulling community images, remove line to pull images
 community_images: {}
 
+kube_prometheus_stack_release_overrides: 
+  alertmanager:
+    config: "{{ dev_user_cluster_alertmanager_values }}"
+
 # Disable opensearch output on dev instances
 fluent_operator_user_opensearch_config: {}
 user_cluster_logging_user: 
