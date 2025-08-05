@@ -1,0 +1,32 @@
+fluent_operator_filter:
+  apiVersion: fluentbit.fluent.io/v1alpha2
+  kind: ClusterFilter
+  metadata:
+    name: fluent_operator_filter
+    labels:
+      fluentbit.fluent.io/enabled: "true"
+      fluentbit.fluent.io/component: logging
+  spec:
+    match: kubernetes.*
+    filters:
+      - customPlugin:
+        config: |
+            Name grep
+            Match *
+            Logical_Op and
+            Regex $kubernetes['labels']['container_name'] "^(network-operator|gpu-operator)$"
+            Regex log_level "(?i)info"
+      - grep:
+        exclude: $kubernetes['container_name'] "^(network-operator|gpu-operator)$"
+      - grep:
+        exclude: log_level "(?i)info"
+      - grep:
+        exclude: log ".*"
+      - grep:
+        exclude: log *
+      - grep:
+        exclude: $kubernetes["log"] *
+      - grep:
+        exclude: $kubernetes["pod_name"] ".*"
+      - grep:
+        exclude: $kubernetes["pod_name"] "*"
