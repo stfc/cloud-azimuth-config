@@ -10,6 +10,11 @@ capi_cluster_helm_addon_overrides:
     kubePrometheusStack:
       release:
         values:
+          prometheus:
+            prometheusSpec:
+                externalLabels:
+                  cluster: azimuth
+                  env: "{{ capi_cluster_alertmanager_env }}"
           alertmanager:
             config: "{{ capi_cluster_alertmanager_values }}"
   custom:
