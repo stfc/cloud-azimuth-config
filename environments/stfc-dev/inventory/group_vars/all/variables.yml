@@ -29,6 +29,12 @@ azimuth_clusters_enabled: false
 community_images: {}
 
 kube_prometheus_stack_release_overrides: 
+  prometheus:
+    prometheusSpec:
+        externalLabels:
+                        cluster: azimuth
+                        # TODO: Needs to be set from variables (either dev/staging/prod)
+                        env: dev
   alertmanager:
     config: "{{ dev_user_cluster_alertmanager_values }}"
 
