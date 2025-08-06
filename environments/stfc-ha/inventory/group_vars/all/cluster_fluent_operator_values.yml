@@ -13,44 +13,11 @@ capi_cluster_fluent_operator_values:
       fluentbit.io/exclude: "true"
       promtheus.io/scrape: "true"
 
-    # additionalVolumes:
-    #   - name: host-proc
-    #     hostPath:
-    #       path: /proc/
-    #   - name: host-sys
-    #     hostPath:
-    #       path: /sys/
-    #   - name: host-buffer
-    #     hostPath:
-    #       path: /tmp/fluent-bit-buffer
-    # additionalVolumesMounts:
-    #   - mountPath: /host/sys
-    #     mountPropagation: HostToContainer
-    #     name: host-sys
-    #     readOnly: true
-    #   - mountPath: /host/proc
-    #     mountPropagation: HostToContainer
-    #     name: host-proc
-    #     readOnly: true
-    #   - mountPath: /host/fluent-bit-buffer
-    #     mountPropagation: HostToContainer
-    #     name: host-buffer
-
     input:
       tail:
         enable: true
       systemd:
         enable: true
-      # nodeExporterMetrics:
-      #   tag: node_metrics
-      #   scrapeInterval: 15s
-      #   path:
-      #     procfs: /proc/
-      #     sysfs: /sys/
-      # fluentBitMetrics:
-      #   scrapeInterval: 10s
-      #   scrapeOnStart: true
-      #   tag: "fb.metrics"
 
     output:
       opensearch: "{{ fluent_operator_cluster_opensearch_config }}"
@@ -59,11 +26,15 @@ capi_cluster_fluent_operator_values:
         host: loki-stack
         port: 3100
         tenantID: ""
-        labels: ["job=fluent-bit"]
-        # removeKeys: ["kubernetes", "stream"]
+        labels:
+          - job=fluent-bit
+          - pod=$kubernetes['pod_name']
+          - namespace=$kubernetes['namespace_name']
+          - container_name=$kubernetes['container_name']
+          # - app=$kubernetes['labels']['app'] # This isn't standard (i.e. sometimes its labels.k8s.app); and it generally duplicates container_name anyway
         removeKeys: []
-        autoKubernetesLabels: "on"
-        # lineFormat: json
+        autoKubernetesLabels: "off" # Only seems to work for labels and annotations, not metadata. Disabling and doing it myself!
+        lineFormat: json
 
       prometheusMetricsExporter:
         metricsExporter:
@@ -71,15 +42,6 @@ capi_cluster_fluent_operator_values:
           port: 2020
           addLabels:
             app: "fluentbit"
-    # service:
-    #   storage:
-    #     path: "/host/fluent-bit-buffer/"
-    #     backlogMemLimit: "50MB"
-    #     checksum: "off"
-    #     deleteIrrecoverableChunks: "on"
-    #     maxChunksUp: 128
-    #     metrics: "on"
-    #     sync: normal
 
     filter:
       kubernetes:
