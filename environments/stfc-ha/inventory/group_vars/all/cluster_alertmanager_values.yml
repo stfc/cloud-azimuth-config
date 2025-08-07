@@ -12,8 +12,12 @@ capi_cluster_alertmanager_values:
     routes:
       - receiver: default-receiver
         group_by: ["cluster", "service"]
+        # group_wait is the waiting time before sending a notification for a group of alerts
         group_wait: 30m
+        # group_interval is the waiting time before sending a notification about new alerts added to a group of alerts 
+        # if an initial notification has already been sent 
         group_interval: 4h
+        # repeat_interval is the waiting time before sending a notification again if it has already been sent for an alert
         repeat_interval: 2d
         active_time_intervals:
           - officehours
@@ -38,8 +42,8 @@ capi_cluster_alertmanager_values:
     - name: officehours
       time_intervals:
         - times:
-            - start_time: "07:00"
-              end_time: "18:00"
+            - start_time: "08:30"
+              end_time: "17:00"
           weekdays: ["monday:friday"]
           location: "Europe/London"
 
