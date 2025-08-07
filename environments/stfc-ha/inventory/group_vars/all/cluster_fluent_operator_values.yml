@@ -2,6 +2,14 @@
 capi_cluster_fluent_operator_values:
   fluentbit:
     enable: true
+    
+    serviceMonitor:
+      enable: true
+      interval: 30s
+      path: /api/v2/metrics/prometheus
+      scrapeTimeout: 10s
+      secure: false
+
     resources:
       limits:
         cpu: 500m
@@ -9,6 +17,7 @@ capi_cluster_fluent_operator_values:
       requests:
         cpu: 10m
         memory: 25Mi
+    
     annotations:
       fluentbit.io/exclude: "true"
       promtheus.io/scrape: "true"
@@ -36,13 +45,6 @@ capi_cluster_fluent_operator_values:
         autoKubernetesLabels: "off" # Only seems to work for labels and annotations, not metadata. Disabling and doing it myself!
         lineFormat: json
 
-      prometheusMetricsExporter:
-        metricsExporter:
-          host: "0.0.0.0"
-          port: 2020
-          addLabels:
-            app: "fluentbit"
-
     filter:
       kubernetes:
         enable: true
@@ -53,11 +55,5 @@ capi_cluster_fluent_operator_values:
       systemd:
         enable: true
 
-    serviceMonitor:
-      enable: true
-      interval: 30s
-      path: /api/v2/metrics/prometheus
-      scrapeTimeout: 10s
-      port: http-metrics
   fluentd:
     enable: false
