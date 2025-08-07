@@ -42,3 +42,5 @@ fluent_operator_cluster_opensearch_logstash_prefix: "kube_logs_{{ capi_cluster_r
 fluent_operator_user_opensearch_logstash_prefix: "{{ '{%- endraw %}' }}{% raw %}kube_logs_azimuth_user_cluster_{{ cluster.metadata.uid }}_projectid_{{ (cloud_identity.data[\"user_info.yaml\"] | b64decode
     | fromyaml).project_id }}{% endraw %}{{ '{%- raw %}' }}"
 ##################################################################################
+# Alertmanager
+capi_cluster_alertmanager_env: prod
