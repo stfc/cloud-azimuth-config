@@ -46,7 +46,9 @@ capi_cluster_alertmanager_values:
               end_time: "17:00"
           weekdays: ["monday:friday"]
           location: "Europe/London"
-
+# Throughout, you'll notice we use two levels of raw blocks. 
+# This is because we first need to avoid Ansible applying templating, then the capi-addon-operator has its own Jinja templating.
+# This ensures the templating is only applied by Helm
   receivers:
     - name: "null"
     - name: default-receiver
@@ -55,11 +57,11 @@ capi_cluster_alertmanager_values:
           send_resolved: true
           headers:
             subject: |
-              {%- raw %}
+              {{ '{%- raw %}' }}{%- raw %}
               "({{ .CommonLabels.env }} : {{ .CommonLabels.cluster }}) {{ or .CommonLabels.alertname "Multiple Alerts" }}"
-              {%- endraw %}
+              {%- endraw %}{{ '{%- endraw %}' }}
           html: |-
-            {%- raw %}
+            {{ '{%- raw %}' }}{%- raw %}
             <b>You have the following alerts:</b>
             {{ range .Alerts }}
                 <b>{{.Labels.alertname}}</b><br/>
@@ -73,9 +75,9 @@ capi_cluster_alertmanager_values:
                 {{ end }}</ul>
                 <p><a href="{{ .GeneratorURL }}">View in Prometheus</a></p>
             {{ end }}
-            {%- endraw %}
+            {%- endraw %}{{ '{%- endraw %}' }}
           text: |-
-            {%- raw %}
+            {{ '{%- raw %}' }}{%- raw %}
             You have the following alerts:
             {{ range .Alerts }}
             * [{{ .Labels.severity }}] {{.Labels.alertname}}
@@ -89,7 +91,7 @@ capi_cluster_alertmanager_values:
               {{ end }}
               View in Prometheus: {{ .GeneratorURL }}
             {{ end }}
-            {%- endraw %}
+            {%- endraw %}{{ '{%- endraw %}' }}
 
   templates:
     - "/etc/alertmanager/config/*.tmpl"
