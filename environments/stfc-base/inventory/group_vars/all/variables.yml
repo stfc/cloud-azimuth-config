@@ -81,6 +81,9 @@ azimuth_capi_operator_cluster_templates_extra: |-
               "values": {
                 "kubernetesVersion": kube_version_dot,
                 "machineImageId": image_id,
+                "controlPlane": {
+                  "machineCount": azimuth_capi_operator_capi_helm_control_plane_count,
+                },
               },
             },
             recursive = True
