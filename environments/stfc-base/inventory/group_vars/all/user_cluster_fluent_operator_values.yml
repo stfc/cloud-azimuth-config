@@ -4,7 +4,7 @@ azimuth_capi_operator_fluent_operator_values:
     enable: true
 
     serviceMonitor:
-      enable: true
+      enable: false
       interval: 30s
       path: /api/v2/metrics/prometheus
       scrapeTimeout: 10s
