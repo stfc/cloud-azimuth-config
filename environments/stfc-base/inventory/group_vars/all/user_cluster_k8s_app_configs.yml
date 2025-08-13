@@ -84,3 +84,6 @@ azimuth_capi_operator_app_templates_argocd_default_values:
     configs:
       cm:
         admin.enabled: false
+
+azimuth_capi_operator_app_templates_huggingface_llm_chart_name: stfc-azimuth-llm-chat
+azimuth_capi_operator_app_templates_huggingface_llm_chart_repo: https://stfc.github.io/cloud-helm-charts/
