@@ -87,3 +87,8 @@ azimuth_capi_operator_app_templates_argocd_default_values:
 
 azimuth_capi_operator_app_templates_huggingface_llm_chart_name: stfc-azimuth-llm-chat
 azimuth_capi_operator_app_templates_huggingface_llm_chart_repo: https://stfc.github.io/cloud-helm-charts/
+azimuth_capi_operator_app_templates_huggingface_llm_default_values:
+  azimuth-llm:
+    api:
+      monitoring:
+        enabled: false # HOTFIX: https://github.com/stackhpc/azimuth-llm/issues/116
