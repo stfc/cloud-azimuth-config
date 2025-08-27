@@ -5,7 +5,7 @@ capi_cluster_addons_ingress_load_balancer_ip: < FIP 1 >
 zenith_sshd_service_load_balancer_ip: < FIP 2 >
 infra_fixed_floatingip: < FIP 3 >
 
-infra_flavor_id: "6dcd1f3e-bd1d-43b9-9668-8e07735fb550" # l3.tiny (8 vCPU, ~30GB RAM, 200GB disk)
+infra_flavor_id: "81b72052-9bee-4917-a4d9-05d3e7d0f671" # l3.tiny (8 vCPU, ~30GB RAM, 200GB disk)
 # Disable HTTPS and certificate verification everywhere to avoid certificate issues
 ingress_tls_enabled: false
 # Disable SSL verification for OpenStack in case it uses a custom CA
@@ -32,3 +32,11 @@ community_images: {}
 fluent_operator_user_opensearch_config: {}
 user_cluster_logging_user: 
 user_cluster_logging_pass: 
+
+#############################################################################
+# Azimuth configuration
+
+# The name of the current cloud
+azimuth_current_cloud_name: dev-stfc-cloud
+# The label for the current cloud
+azimuth_current_cloud_label: Development STFC Cloud
