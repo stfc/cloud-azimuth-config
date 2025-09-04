@@ -84,3 +84,6 @@ azimuth_capi_operator_app_templates_argocd_default_values:
     configs:
       cm:
         admin.enabled: false
+
+# Disabled until we resolve the default model being DeepSeek
+azimuth_capi_operator_app_templates_huggingface_llm_enabled: false
