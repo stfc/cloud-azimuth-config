@@ -6,20 +6,12 @@
 
 # use a pre-existing STFC Cloud image rather than a community one
 # allows us to keep all existing cloud-init security configuration  
-infra_image_id: ecf7eea6-9f55-4fcd-9ce5-bc171018655c # ubuntu-jammy-22.04-nogui
+infra_image_id: 87e543ec-98bc-4299-b7d7-863a2e9a24e8 # ubuntu-jammy-22.04-nogui
 
 infra_flavor_id: d314c1e5-a1be-4aae-97f4-a840d4f53428 # l3.xsmall
 
 # Use the first available external network
 infra_external_network_id: "0dc30001-edfb-4137-be76-8e51f38fd650"
-
-#############################################################################
-# Azimuth configuration
-
-# The name of the current cloud
-azimuth_current_cloud_name: staging-stfc-cloud
-# The label for the current cloud
-azimuth_current_cloud_label: Staging STFC Cloud
 
 #############################################################################
 # Configuration of authenticators / authentication methods
@@ -29,23 +21,38 @@ azimuth_openstack_verify_ssl: false
 
 #############################################################################
 # STFC Cloud CAPI Cluster Templates
+
 # set possible capi cluster templates for azimuth capi operator
-azimuth_capi_operator_images:
-  capi-ubuntu-2204-kube-v1.27.16-2025-01-24:
-    id: "64425be9-fbf1-4fa2-8e81-fe085f816039"
-    kubernetes_version: "v1.27.16"
-  capi-ubuntu-2204-kube-v1.28.15-2025-05-02:
-    id: "298e196f-58dd-451f-8eee-5f1415f55322"
-    kubernetes_version: "v1.28.15"
-  capi-ubuntu-2204-kube-v1.29.15-2025-05-02:
-    id: "786e59e2-e499-482d-9668-c732c61e4945"
-    kubernetes_version: "v1.29.15"
-  capi-ubuntu-2204-kube-v1.30.12-2025-05-02:
-    id: "32afcdbc-f431-4003-840e-a91056228383"
-    kubernetes_version: "v1.30.12"
-  capi-ubuntu-2204-kube-v1.31.8-2025-05-02:
-    id: "a1b2b627-642c-4a37-bf50-886d09308253"
-    kubernetes_version: "v1.31.8"
-  capi-ubuntu-2204-kube-v1.32.4-2025-05-02:
-    id: "bb88d8b3-1bf6-4cc0-9238-809b84114310"
-    kubernetes_version: "v1.32.4"
+capi_image_list:
+  - "capi-ubuntu-2204-kube-v1.33.4-2025-08-27"
+  - "capi-ubuntu-2204-kube-v1.32.8-2025-08-27"
+
+azimuth_capi_operator_cluster_templates_extra: |-
+  {
+    {% for image in capi_image_list %}
+    {% set image_id = (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', image))[0].ID | string() %}
+    {% set kube_version_dot_v = image | regex_search( 'v[0-9][.][0-9]*[.][0-9]*' ) | string() %}
+    {% set kube_version_dot = image | regex_search( '[0-9][.][0-9]*[.][0-9]*' ) | string() %}
+    {% set kube_version = kube_version_dot | replace('.', '-') | string() %}
+    "kube-{{ kube_version }}": {
+      "annotations": {{ azimuth_capi_operator_cluster_template_annotations }},
+      "spec": {{
+        azimuth_capi_operator_cluster_template_defaults |
+          combine(
+            {
+              "label": kube_version_dot_v,
+              "description": "Kubernetes " ~ kube_version_dot_v ~ " with HA control plane.",
+              "values": {
+                "kubernetesVersion": kube_version_dot,
+                "machineImageId": image_id,
+                "controlPlane": {
+                  "machineCount": azimuth_capi_operator_capi_helm_control_plane_count,
+                },
+              },
+            },
+            recursive = True
+          )
+      }},
+    },
+    {% endfor %}
+  }
