@@ -2,8 +2,8 @@
 #############################################################################
 # Configuration for the HA cluster
 
-capi_cluster_addons_ingress_load_balancer_ip: "130.246.215.12"
-zenith_sshd_service_load_balancer_ip: "130.246.83.235"
+capi_cluster_addons_ingress_load_balancer_ip: "130.246.211.172"
+zenith_sshd_service_load_balancer_ip: "130.246.211.175"
 
 #############################################################################
 # Ingress configuration
@@ -20,7 +20,7 @@ azimuth_openstack_verify_ssl: false
 # deny creation of any platforms on any tenancies other than azimuth-staging
 # prevents unauthorized users using staging - as its meant for testing things
 platforms_tenancy_allow_list:
-  - 3a9266ccea8c4e84a488636d84c0c2c7 # azimuth-staging
+  - 89ab3c08e3794532acb354ff11693fad # azimuth-staging
 
 ##################################################################################
 # STFC Security policy - disable 3rd party images
@@ -32,6 +32,14 @@ community_images_default_visibility: private
 
 # Disable ssh-workstations
 azimuth_caas_workstation_ssh_enabled: false
+
+#############################################################################
+# Azimuth configuration
+
+# The name of the current cloud
+azimuth_current_cloud_name: staging-stfc-cloud
+# The label for the current cloud
+azimuth_current_cloud_label: Staging STFC Cloud
 
 ##################################################################################
 # Fluent Operator Opensearch Config
@@ -55,3 +63,17 @@ fluent_operator_user_opensearch_logstash_prefix: "{{ '{%- endraw %}' }}{% raw %}
 ##################################################################################
 # Alertmanager
 capi_cluster_alertmanager_env: staging
+
+
+### CAPI Cluster Overrides for Staging on Dev Openstack ###
+
+# TODO: make this find the latest image automatically
+capi_cluster_machine_image_id: "78f351a3-b890-4e21-9214-677ecd09c451"
+capi_cluster_kubernetes_version:  "v1.33.4"
+
+# Worker/Control plane node count for azimuth capi cluster
+capi_cluster_control_plane_flavor: "dep-l2.tiny"
+# The name of the flavor to use for worker nodes
+capi_cluster_worker_flavor: "dep-l2.tiny"
+
+###########################################################

@@ -78,3 +78,12 @@ azimuth_capi_operator_app_templates_jupyterhub_default_values:
 
           c.JupyterHub.redirect_to_server = False
           c.JupyterHub.authenticator_class = RemoteUserAuthenticator
+
+azimuth_capi_operator_app_templates_argocd_default_values:
+  argo-cd:
+    configs:
+      cm:
+        admin.enabled: false
+
+# Disabled until we resolve the default model being DeepSeek
+azimuth_capi_operator_app_templates_huggingface_llm_enabled: false
