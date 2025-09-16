@@ -57,3 +57,11 @@ capi_cluster_control_plane_flavor: "dep-l2.tiny"
 capi_cluster_worker_flavor: "dep-l2.tiny"
 
 ###########################################################
+# EARLY PREVIEW PERIOD CONFIG
+
+# deny creation of any platforms on any tenancies other than those approved for early-preview period 
+# prevents unauthorized users during early-preview period
+# limits resource usage, ensures that users have acknowledged MOU
+platforms_tenancy_allow_list:
+  - ffe9f53bf77b47948393fc0c8bd27f1b # UKSRC Project
+  - 80d29ed6ed9c45569f80239426e8077e # Azimuth Prod Project (to allow for testing)
