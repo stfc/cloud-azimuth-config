@@ -1,6 +1,8 @@
 ---
 capi_cluster_helm_addon_overrides:
   monitoring:
+    blackboxExporter:
+      enabled: false
     lokiStack:
       enabled: true
       release:
