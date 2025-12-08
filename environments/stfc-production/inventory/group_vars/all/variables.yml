@@ -63,5 +63,10 @@ capi_cluster_worker_flavor: "dep-l2.tiny"
 # prevents unauthorized users during early-preview period
 # limits resource usage, ensures that users have acknowledged MOU
 platforms_tenancy_allow_list:
+  # for internal testing
   - ffe9f53bf77b47948393fc0c8bd27f1b # UKSRC Project
   - 80d29ed6ed9c45569f80239426e8077e # Azimuth Prod Project (to allow for testing)
+
+  # for users - early access testing
+  - dd791d32051b49718d4a4b1f9e470ca9 # CCPi
+  - ba477c9ce6c14c618ee7d63a7723c76c # CSE-Computational-Biology
