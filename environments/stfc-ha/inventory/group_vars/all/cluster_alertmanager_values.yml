@@ -3,7 +3,7 @@ capi_cluster_alertmanager_values:
     # time before a 'resolved' message is sent after alert stops firing
     resolve_timeout: 5m
     opsgenie_api_url: 'https://api.opsgenie.com/'
-    opsgenie_api_key: {{ capi_cluster_alertmanager_opsgenie_api_key }}
+    opsgenie_api_key: "{{ capi_cluster_alertmanager_opsgenie_api_key }}"
 
   route:
     # we need a null reciever to workaround azimuth addon enforced defaults 
