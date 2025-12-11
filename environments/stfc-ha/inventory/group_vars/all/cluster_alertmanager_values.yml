@@ -59,12 +59,17 @@ capi_cluster_alertmanager_values:
         group_by: ['severity', 'alertname']
 
   inhibit_rules:
-    # mute warning/info alerts on same alertname if critical alert is firing - less noise
+    # mute warning/info alerts on same service if a higher level alert is firing in the same namespace - less noise
     - source_matchers:
         - severity = "critical"
       target_matchers:
         - severity = "warning"
-      equal: ['alertname']
+      equal: ['namespace']
+    - source_matchers:
+        - severity = "critical|warning"
+      target_matchers:
+        - severity = "info"
+      equal: ['namespace']
 
   time_intervals:
     - name: officehours
