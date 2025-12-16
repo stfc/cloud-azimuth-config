@@ -6,7 +6,7 @@
 
 # use a pre-existing STFC Cloud image rather than a community one
 # allows us to keep all existing cloud-init security configuration  
-infra_image_id: 87e543ec-98bc-4299-b7d7-863a2e9a24e8 # ubuntu-jammy-22.04-nogui
+infra_image_id: 388c511b-4be4-4cb8-88a1-05aea7b2969f # ubuntu-jammy-22.04-nogui
 
 infra_flavor_id: d314c1e5-a1be-4aae-97f4-a840d4f53428 # l3.xsmall
 
