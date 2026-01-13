@@ -23,8 +23,8 @@ platforms_tenancy_allow_list:
   - 89ab3c08e3794532acb354ff11693fad # azimuth-staging
 
 ##################################################################################
-# STFC Security policy - disable 3rd party images
-# Azimuth caas operator is tightly coupled with 3rd party images - disable apps on production until fixed
+# Clusters as a service
+
 azimuth_clusters_enabled: true
 azimuth_caas_rstudio_enabled: true
 azimuth_caas_stackhpc_slurm_appliance_enabled: false
