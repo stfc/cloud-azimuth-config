@@ -20,6 +20,7 @@ azimuth_caas_stackhpc_slurm_appliance_enabled: false
 azimuth_caas_repo2docker_enabled: true
 azimuth_caas_workstation_ssh_enabled: false
 
+# These were built using cloud-image-builders - see https://github.com/stfc/cloud-image-builders/blob/main/os_builders/README.md
 azimuth_caas_workstation_image: "a510a220-ce30-4e94-a605-bb1443a12fb1"
 azimuth_caas_rstudio_image: "582d7263-228d-4e62-a620-df87b854e378"
 azimuth_caas_repo2docker_image: "5eba1140-0c74-4494-bab8-32198c1387c0"
