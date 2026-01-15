@@ -71,3 +71,4 @@ platforms_tenancy_allow_list:
   - dd791d32051b49718d4a4b1f9e470ca9 # CCPi
   - ba477c9ce6c14c618ee7d63a7723c76c # CSE-Computational-Biology
   - 62f20920288c40efac22c88115a8b9c8 # SKA-SRC-RAL - SKA early access testing
+  - e6abd5bceade410180d38a0a8eef47cb # AKowaliw-Scratch-Space - Alex C EEP project (until 25/03/26) 
