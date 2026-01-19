@@ -7,7 +7,7 @@
 # use STFC cloud CAPI wrapper chart - brings in our own STFC-Cloud specific values
 capi_cluster_chart_repo: https://stfc.github.io/cloud-helm-charts/
 capi_cluster_chart_name: stfc-cloud-openstack-cluster
-capi_cluster_chart_version: 1.4.11
+capi_cluster_chart_version: 1.4.14
 
 # The number of control plane nodes to use
 capi_cluster_control_plane_count: 5
@@ -18,6 +18,7 @@ capi_cluster_worker_count: 3
 
 capi_cluster_control_plane_omit_failure_domain: true
 capi_cluster_worker_failure_domain:
+
 
 # set our own release defaults
 # copy-paste of defaults but wrapped in "openstack-cluster"  
