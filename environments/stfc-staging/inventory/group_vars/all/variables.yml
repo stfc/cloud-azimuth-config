@@ -7,7 +7,7 @@ zenith_sshd_service_load_balancer_ip: "130.246.211.175"
 
 #############################################################################
 # Use Staging Registry Mirror
-capi_cluster_registry_mirror: { docker.io: ["https://staging.dockerhub.stfc.ac.uk"] }
+capi_cluster_registry_mirror: { docker.io: ["https://staging.dockerhub.stfc.ac.uk/v2/"] }
 
 #############################################################################
 # Ingress configuration
