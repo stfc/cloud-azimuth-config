@@ -132,7 +132,7 @@ azimuth_capi_operator_capi_helm_values_overrides:
       nodeCidr: 192.168.128.0/17
   registryMirrors:
     docker.io:
-      - "https://dockerhub.stfc.ac.uk"
+      - "https://dockerhub.stfc.ac.uk/v2/"
   addons: "{{ azimuth_capi_operator_helm_addon_overrides }}"
 
 azimuth_capi_operator_capi_helm_pods_cidr: 10.0.0.0/13
