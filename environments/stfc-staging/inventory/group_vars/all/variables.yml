@@ -6,6 +6,10 @@ capi_cluster_addons_ingress_load_balancer_ip: "130.246.211.172"
 zenith_sshd_service_load_balancer_ip: "130.246.211.175"
 
 #############################################################################
+# Use Staging Registry Mirror
+capi_cluster_registry_mirror: { docker.io: ["https://staging.dockerhub.stfc.ac.uk"] }
+
+#############################################################################
 # Ingress configuration
 
 # The base domain to use for ingress resources
@@ -77,8 +81,8 @@ capi_cluster_alertmanager_env: staging
 ### CAPI Cluster Overrides for Staging on Dev Openstack ###
 
 # TODO: make this find the latest image automatically
-capi_cluster_machine_image_id: "78f351a3-b890-4e21-9214-677ecd09c451"
-capi_cluster_kubernetes_version:  "v1.33.4"
+capi_cluster_machine_image_id: "50ed1a91-ab48-46ce-a9f6-aaf3ce9d8a06"
+capi_cluster_kubernetes_version:  "v1.34.3"
 
 # Worker/Control plane node count for azimuth capi cluster
 capi_cluster_control_plane_flavor: "dep-l2.tiny"
