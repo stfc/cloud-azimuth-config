@@ -60,8 +60,10 @@ azimuth_caas_stackhpc_slurm_appliance_extra_vars_overrides: "{{ stfc_compliance_
 
 # set possible capi cluster templates for azimuth capi operator
 capi_image_list:
-  - "capi-ubuntu-2204-kube-v1.33.4-2025-08-27"
-  - "capi-ubuntu-2204-kube-v1.32.8-2025-08-27"
+  - "capi-ubuntu-2204-kube-v1.31.12"
+  - "capi-ubuntu-2204-kube-v1.32.8"
+  - "capi-ubuntu-2204-kube-v1.33.4"
+  - "capi-ubuntu-2204-kube-v1.34.3"
 
 azimuth_capi_operator_cluster_templates_extra: |-
   {
