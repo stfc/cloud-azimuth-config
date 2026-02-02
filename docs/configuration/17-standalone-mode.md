@@ -1,10 +1,8 @@
 # Standalone Azimuth mode
 
 <!-- prettier-ignore-start -->
-!!! warning
-
-This mode is still experimental and in early development!
-
+!!! warning "Technology Preview"
+    Standalone Azimuth mode is still experimental and in early development!
 <!-- prettier-ignore-end -->
 
 - Standalone mode is an environment/set of features designed to allow Azimuth to run WITHOUT Openstack on any Kubernetes cluster.
@@ -68,7 +66,7 @@ ansible-galaxy install -f -r requirements.yml
 # N.B. these are excluded from git using .gitignore
 ./bin/generate-secrets
 
-# Run playbook to setup your VM amd Deploy Azimuth
+# Run playbook to setup your VM and deploy Azimuth
 ansible-playbook azimuth_cloud.azimuth_ops.deploy_standalone
 ```
 
@@ -115,7 +113,7 @@ ansible-galaxy install -f -r requirements.yml
 # N.B. these are excluded from git using .gitignore
 ./bin/generate-secrets
 
-# Run playbook to setup your VM amd Deploy Azimuth
+# Run playbook to setup your VM and deploy Azimuth
 ansible-playbook azimuth_cloud.azimuth_ops.deploy
 ```
 
