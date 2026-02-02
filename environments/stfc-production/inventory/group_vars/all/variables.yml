@@ -56,8 +56,8 @@ capi_cluster_alertmanager_env: prod
 ### CAPI Cluster Overrides for Staging on Prod Openstack ###
 
 # TODO: make this find the latest image automatically
-capi_cluster_machine_image_id: "c88c7733-d82c-491d-9f52-44e6ce547fed"
-capi_cluster_kubernetes_version:  "v1.33.4"
+capi_cluster_machine_image_id: "50ed1a91-ab48-46ce-a9f6-aaf3ce9d8a06"
+capi_cluster_kubernetes_version:  "v1.34.3"
 
 # Worker/Control plane node count for azimuth capi cluster
 capi_cluster_control_plane_flavor: "dep-l2.tiny"
