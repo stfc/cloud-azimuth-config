@@ -80,3 +80,4 @@ platforms_tenancy_allow_list:
   - ba477c9ce6c14c618ee7d63a7723c76c # CSE-Computational-Biology
   - 62f20920288c40efac22c88115a8b9c8 # SKA-SRC-RAL - SKA early access testing
   - e6abd5bceade410180d38a0a8eef47cb # AKowaliw-Scratch-Space - Alex C EEP project (until 25/03/26) 
+  - 57724e6b02c04567860c2e6206655f34 # DAaaS Training Feb 4th
