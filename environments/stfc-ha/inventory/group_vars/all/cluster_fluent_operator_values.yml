@@ -1,32 +1,39 @@
 ---
 capi_cluster_fluent_operator_values:
+  
+  operator:
+    resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 20Mi
+    disableComponentControllers: "fluentd"
+
   fluentbit:
     enable: true
     
     serviceMonitor:
       enable: true
-      interval: 30s
-      path: /api/v2/metrics/prometheus
-      scrapeTimeout: 10s
-      secure: false
 
     resources:
       limits:
-        cpu: 500m
-        memory: 400Mi
+        cpu: 2
+        memory: 1.0Gi
       requests:
         cpu: 10m
         memory: 25Mi
-    
+  
     annotations:
       fluentbit.io/exclude: "true"
       promtheus.io/scrape: "true"
 
     input:
-      tail:
-        enable: true
-      systemd:
-        enable: true
+      fluentBitMetrics:
+        scrapeInterval: "2"
+        scrapeOnStart: true
+        tag: "fb.metrics"
 
     output:
       opensearch: "{{ fluent_operator_cluster_opensearch_config }}"
@@ -45,15 +52,19 @@ capi_cluster_fluent_operator_values:
         autoKubernetesLabels: "off" # Only seems to work for labels and annotations, not metadata. Disabling and doing it myself!
         lineFormat: json
 
+      prometheusMetricsExporter:
+        match: "fb.metrics"
+        metricsExporter:
+          host: "0.0.0.0"
+          port: 2020
+          addLabels:
+            app: "fluentbit"
+
     filter:
       kubernetes:
         enable: true
         labels: true
         annotations: false
-      containerd:
-        enable: true
-      systemd:
-        enable: true
 
   fluentd:
     enable: false

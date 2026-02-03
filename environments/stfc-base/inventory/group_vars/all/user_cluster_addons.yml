@@ -14,7 +14,7 @@ azimuth_capi_operator_helm_addon_overrides:
         chart:
           repo: https://fluent.github.io/helm-charts
           name: fluent-operator
-          version: 3.4.0
+          version: 3.5.0
         values: "{{ azimuth_capi_operator_fluent_operator_values }}"
     opensearch-credentials:
       kind: Manifests
