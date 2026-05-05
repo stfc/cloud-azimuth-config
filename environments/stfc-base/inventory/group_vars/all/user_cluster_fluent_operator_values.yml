@@ -1,0 +1,70 @@
+---
+azimuth_capi_operator_fluent_operator_values:
+
+  operator:
+    resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 20Mi
+    disableComponentControllers: "fluentd"
+
+  fluentbit:
+    enable: true
+    
+    serviceMonitor:
+      enable: true
+
+    resources:
+      limits:
+        cpu: 2
+        memory: 1.0Gi
+      requests:
+        cpu: 10m
+        memory: 25Mi
+  
+    annotations:
+      fluentbit.io/exclude: "true"
+      promtheus.io/scrape: "true"
+
+    input:
+      fluentBitMetrics:
+        scrapeInterval: "2"
+        scrapeOnStart: true
+        tag: "fb.metrics"
+
+    output:
+      opensearch: "{{ fluent_operator_user_opensearch_config }}"
+      loki:
+        enable: true
+        host: loki-stack
+        port: 3100
+        tenantID: ""
+        labels:
+          - job=fluent-bit
+          - pod=$kubernetes['pod_name']
+          - namespace=$kubernetes['namespace_name']
+          - container_name=$kubernetes['container_name']
+          # - app=$kubernetes['labels']['app'] # This isn't standard (i.e. sometimes its labels.k8s.app); and it generally duplicates container_name anyway
+        removeKeys: []
+        autoKubernetesLabels: "off" # Only seems to work for labels and annotations, not metadata. Disabling and doing it myself!
+        lineFormat: json
+
+      prometheusMetricsExporter:
+        match: "fb.metrics"
+        metricsExporter:
+          host: "0.0.0.0"
+          port: 2020
+          addLabels:
+            app: "fluentbit"
+
+    filter:
+      kubernetes:
+        enable: true
+        labels: true
+        annotations: false
+
+  fluentd:
+    enable: false

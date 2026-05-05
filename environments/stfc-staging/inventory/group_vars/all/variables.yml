@@ -1,0 +1,71 @@
+---
+#############################################################################
+# Configuration for the HA cluster
+
+capi_cluster_addons_ingress_load_balancer_ip: "130.246.211.172"
+zenith_sshd_service_load_balancer_ip: "130.246.211.175"
+
+#############################################################################
+# Use Staging Registry Mirror
+capi_cluster_registry_mirror: { docker.io: ["https://staging.dockerhub.stfc.ac.uk/v2/"] }
+
+#############################################################################
+# Ingress configuration
+
+# The base domain to use for ingress resources
+ingress_base_domain: "apps.staging-cape.stfc.ac.uk"
+
+# TODO: remove this once we get tls certs for staging 
+# Disable HTTPS and certificate verification everywhere to avoid certificate issues
+ingress_tls_enabled: false
+# Disable SSL verification for OpenStack in case it uses a custom CA
+azimuth_openstack_verify_ssl: false
+
+# deny creation of any platforms on any tenancies other than azimuth-staging
+# prevents unauthorized users using staging - as its meant for testing things
+platforms_tenancy_allow_list:
+  - 89ab3c08e3794532acb354ff11693fad # azimuth-staging
+
+#############################################################################
+# Azimuth configuration
+
+# The name of the current cloud
+azimuth_current_cloud_name: staging-stfc-cloud
+# The label for the current cloud
+azimuth_current_cloud_label: Staging STFC Cloud
+
+##################################################################################
+# Fluent Operator Opensearch Config
+fluent_operator_cluster_opensearch_host: opensearch.staging-worker.nubes.stfc.ac.uk
+fluent_operator_user_opensearch_host: opensearch.staging-worker.nubes.stfc.ac.uk
+
+fluent_operator_cluster_opensearch_port: 443
+fluent_operator_user_opensearch_port: 443
+
+fluent_operator_cluster_opensearch_logstash_prefix: "kube_logs_{{ capi_cluster_release_name }}"
+# At the time of writing, custom addons have templating disabled:
+  # https://github.com/azimuth-cloud/capi-helm-charts/blob/affae0544b07c4b2e641b3b5bf990e561c055a91/charts/cluster-addons/templates/custom-addons.yaml#L15
+  # 1. Temporarily re-enable templating with an endraw
+  # 2. Template for Openstack Project ID by base64 decoding the user info from the cloud_credentials secret
+  #    a. https://github.com/azimuth-cloud/cluster-api-addon-provider/tree/main?tab=readme-ov-file#templates
+  #    b. Note, the "cluster" and "infra_cluster" are CRD types cluster.cluster.x-k8s.io and openstackcluster.infrastructure.cluster.x-k8s.io; not clusters.azimuth.stackhpc.com
+  # 3. Template for the Kubernetes UID of the cluster object, for it to be unique to the project
+  # 4. Re-disable templating
+fluent_operator_user_opensearch_logstash_prefix: "{{ '{%- endraw %}' }}{% raw %}kube_logs_azimuth_staging_user_cluster_{{ cluster.metadata.uid }}_projectid_{{ (cloud_identity.data[\"user_info.yaml\"] | b64decode
+    | fromyaml).project_id }}{% endraw %}{{ '{%- raw %}' }}"
+##################################################################################
+# Alertmanager
+capi_cluster_alertmanager_env: staging
+
+### CAPI Cluster Overrides for Staging on Dev Openstack ###
+
+# TODO: make this find the latest image automatically
+capi_cluster_machine_image_id: "c877b656-5e9b-454d-a130-07f03f064aec"
+capi_cluster_kubernetes_version:  "v1.34.3"
+
+# Worker/Control plane node count for azimuth capi cluster
+capi_cluster_control_plane_flavor: "dep-l2.tiny"
+# The name of the flavor to use for worker nodes
+capi_cluster_worker_flavor: "dep-l2.tiny"
+
+###########################################################

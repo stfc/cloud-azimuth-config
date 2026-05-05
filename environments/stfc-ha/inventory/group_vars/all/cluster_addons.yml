@@ -1,0 +1,45 @@
+---
+capi_cluster_helm_addon_overrides:
+  monitoring:
+    blackboxExporter:
+      enabled: false
+    lokiStack:
+      enabled: true
+      release:
+        values:
+          promtail:
+            enabled: false
+    kubePrometheusStack:
+      release:
+        values:
+          prometheus:
+            prometheusSpec:
+                externalLabels:
+                  cluster: azimuth
+                  env: "{{ capi_cluster_alertmanager_env }}"
+          alertmanager:
+            config: "{{ capi_cluster_alertmanager_values }}"
+  custom:
+    fluent-operator:
+      kind: HelmRelease
+      spec:
+        namespace: monitoring-system
+        chart:
+          repo: https://fluent.github.io/helm-charts
+          name: fluent-operator
+          version: 3.5.0
+        values: "{{ capi_cluster_fluent_operator_values }}"
+    opensearch-credentials:
+      kind: Manifests
+      spec:
+        namespace: monitoring-system
+        manifests:
+          opensearch-credentials.yaml: |-
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: opensearch-credentials
+            type: Opaque
+            stringData:
+              username: "{{ capi_cluster_logging_user }}"
+              password: "{{ capi_cluster_logging_pass }}"

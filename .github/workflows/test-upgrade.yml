@@ -1,8 +1,28 @@
+---
 name: Upgrade test
 
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
 on:
+  # Allow to be called by other workflows
+  workflow_call:
+    inputs:
+      from-ref:
+        description: >-
+          The git ref to use for the initial deployment.
+        type: string
+      to-ref:
+        description: >-
+          The git ref to test an upgrade to.
+        type: string
+        default: devel
+
   # Allow manual execution on any branch
   workflow_dispatch:
+    # checkov:skip=CKV_GHA_7: "The build output cannot be affected by user parameters other than the build entry point and the top-level source location. GitHub Actions workflow_dispatch inputs MUST be empty. "
     inputs:
       target-cloud:
         description: >-
@@ -13,52 +33,78 @@ on:
           - ""
           - arcus
           - leafcloud
+      from-ref:
+        description: >-
+          The git ref to use for the initial deployment.
+        type: string
+      to-ref:
+        description: >-
+          The git ref to test an upgrade to.
+        type: string
+        default: devel
 
 jobs:
-  # Tests an Azimuth upgrade from the current latest release to the code under test
+  # Tests an Azimuth upgrade from the current latest release to the code under
+  # test
   #
-  # Note that success() and failure() consider *all previous steps*, and continue-on-failure
-  # prevents the job from being marked as failed if that step fails
-  # This means that in order to get the execution flow that we want while still resulting in a
-  # failed job when required, we need to use step ids and the conclusions of specific steps
+  # Note that success() and failure() consider *all previous steps*, and
+  # continue-on-failure prevents the job from being marked as failed if that
+  # step fails
+  # This means that in order to get the execution flow that we want while still
+  # resulting in a failed job when required, we need to use step ids and the
+  # conclusions of specific steps
   test_upgrade:
     runs-on: ubuntu-latest
     steps:
-      - name: Get latest tag
-        id: latest-tag
-        run: |
-          set -eo pipefail
-          TAG_NAME="$(curl -fsSL "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases/latest" | jq -r '.tag_name')"
-          echo "tag-name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout latest tag
-        uses: actions/checkout@v3
+      - name: Checkout the initial git ref
+        uses: actions/checkout@v4
         with:
-          ref: ${{ steps.latest-tag.outputs.tag-name }}
-
-      # We want to use the actions as defined in the code under test
-      # So check them out separately
-      - name: Checkout code under test into .actions directory
-        uses: actions/checkout@v3
-        with:
-          path: .actions
+          ref: ${{ inputs.from-ref }}
 
       - name: Set up Azimuth environment
-        uses: ./.actions/.github/actions/setup
+        uses: ./.github/actions/setup
         with:
           os-clouds: ${{ secrets.OS_CLOUDS }}
           repository: ${{ github.repository }}
-          ref: ${{ steps.latest-tag.outputs.tag-name }}
+          ref: ${{ inputs.from-ref }}
           target-cloud: ${{ inputs.target-cloud || vars.TARGET_CLOUD }}
           install-mode: ha
           environment-prefix: ci-upgrade
+          # For Kubernetes, generate a single named test that can be referenced
+          # after the upgrade
+          extra-vars: |
+            upgrade_test_kubernetes_latest_available_version: >-
+              {{-
+                generate_tests_installed_kubernetes_templates |
+                  map(attribute = 'spec.values.kubernetesVersion') |
+                  community.general.version_sort(reverse = True) |
+                  first
+              }}
+            upgrade_test_kubernetes_latest_template_name: >-
+              {{-
+                generate_tests_installed_kubernetes_templates |
+                  selectattr('spec.values.kubernetesVersion', 'eq', upgrade_test_kubernetes_latest_available_version) |
+                  map(attribute = 'metadata.name') |
+                  first
+              }}
+            generate_tests_kubernetes_test_cases:
+              - name: latest
+                kubernetes_template: "{{ upgrade_test_kubernetes_latest_template_name }}"
+                control_plane_size: "{{ generate_tests_kubernetes_test_case_control_plane_size }}"
+                worker_size: "{{ generate_tests_kubernetes_test_case_worker_size }}"
+                worker_count: "{{ generate_tests_kubernetes_test_case_worker_count }}"
+                dashboard_enabled: "{{ generate_tests_kubernetes_test_case_dashboard_enabled }}"
+                monitoring_enabled: "{{ generate_tests_kubernetes_test_case_monitoring_enabled }}"
         # GitHub terminates jobs after 6 hours
-        # We don't want jobs to acquire the lock then get timed out before they can finish
-        # So wait a maximum of 3 hours to acquire the lock, leaving 3 hours for other tasks in the job
+        # We don't want jobs to acquire the lock then get timed out before they
+        # can finish
+        # So wait a maximum of 3 hours to acquire the lock, leaving 3 hours for
+        # other tasks in the job
         timeout-minutes: 180
 
-      - name: Provision Azimuth at latest tag
-        uses: ./.actions/.github/actions/provision
+      - name: Provision Azimuth
+        uses: ./.github/actions/provision
 
       - name: Generate test suite
         id: generate-tests
@@ -66,7 +112,7 @@ jobs:
           set -e
           source ./ci.env
           source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
-          ansible-playbook stackhpc.azimuth_ops.generate_tests \
+          ansible-playbook azimuth_cloud.azimuth_ops.generate_tests \
             -e @extra-vars.yml \
             -e generate_tests_include_upgrade_tests=true
 
@@ -76,22 +122,23 @@ jobs:
           set -e
           source ./ci.env
           source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
-          ./.actions/bin/run-tests --include create --outputdir reports/create
+          ./bin/run-tests --include create --outputdir reports/create
 
       - name: Verify test platforms
         run: |
           set -e
           source ./ci.env
           source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
-          ./.actions/bin/run-tests --include verify --outputdir reports/verify-create
+          ./bin/run-tests --include verify --outputdir reports/verify-create
         if: ${{ !cancelled() && contains(fromJSON('["success", "failure"]'), steps.tests-create.conclusion) }}
 
       - name: Checkout code under test
         id: checkout-latest
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Make sure not to remove working directories
           clean: false
+          ref: ${{ inputs.to-ref }}
         if: ${{ !cancelled() && steps.generate-tests.conclusion == 'success' }}
 
       - name: Install updated Python dependencies
@@ -114,7 +161,7 @@ jobs:
 
       - name: Upgrade Azimuth
         id: upgrade-azimuth
-        uses: ./.actions/.github/actions/provision
+        uses: ./.github/actions/provision
         if: ${{ !cancelled() && steps.update-ansible.conclusion == 'success' }}
 
       - name: Regenerate test suite
@@ -123,7 +170,7 @@ jobs:
           set -e
           source ./ci.env
           source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
-          ansible-playbook stackhpc.azimuth_ops.generate_tests \
+          ansible-playbook azimuth_cloud.azimuth_ops.generate_tests \
             -e @extra-vars.yml \
             -e generate_tests_include_upgrade_tests=true
         if: ${{ !cancelled() && steps.upgrade-azimuth.conclusion == 'success' }}
@@ -133,7 +180,7 @@ jobs:
           set -e
           source ./ci.env
           source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
-          ./.actions/bin/run-tests --include verify --outputdir reports/verify-post-azimuth-upgrade
+          ./bin/run-tests --include verify --outputdir reports/verify-post-azimuth-upgrade
         if: ${{ !cancelled() && steps.regenerate-tests.conclusion == 'success' }}
 
       - name: Upgrade test platforms
@@ -141,7 +188,7 @@ jobs:
           set -e
           source ./ci.env
           source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
-          ./.actions/bin/run-tests --include upgrade --outputdir reports/upgrade
+          ./bin/run-tests --include upgrade --outputdir reports/upgrade
         if: ${{ !cancelled() && steps.regenerate-tests.conclusion == 'success' }}
 
       - name: Verify test platforms post platform upgrade
@@ -149,7 +196,7 @@ jobs:
           set -e
           source ./ci.env
           source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
-          ./.actions/bin/run-tests --include verify --outputdir reports/verify-post-platform-upgrade
+          ./bin/run-tests --include verify --outputdir reports/verify-post-platform-upgrade
         if: ${{ !cancelled() && steps.regenerate-tests.conclusion == 'success' }}
 
       - name: Delete test platforms
@@ -157,11 +204,11 @@ jobs:
           set -e
           source ./ci.env
           source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
-          ./.actions/bin/run-tests --include delete --outputdir reports/delete
+          ./bin/run-tests --include delete --outputdir reports/delete
         if: ${{ always() }}
 
       - name: Upload test report artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: azimuth-upgrade-test-reports
           path: reports/*
@@ -172,16 +219,16 @@ jobs:
           set -e
           source ./ci.env
           source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
-          ./.actions/bin/create-debug-bundle
+          ./bin/create-debug-bundle
         if: ${{ always() }}
 
       - name: Upload debug bundle
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: azimuth-upgrade-debug-bundle
           path: debug-bundle.tar.gz
         if: ${{ always() }}
 
       - name: Destroy Azimuth
-        uses: ./.actions/.github/actions/destroy
+        uses: ./.github/actions/destroy
         if: ${{ always() }}

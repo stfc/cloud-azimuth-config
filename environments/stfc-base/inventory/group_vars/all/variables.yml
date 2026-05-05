@@ -1,0 +1,261 @@
+---
+# common variables for all stfc environments - stfc-development, stfc-production, stfc-staging 
+
+#############################################################################
+# Community Images configuration
+
+# Turn off community images as we build our own versions
+community_images: {}
+
+##################################################################################
+# Clusters as a service
+
+azimuth_caas_rstudio_enabled: true
+azimuth_caas_stackhpc_slurm_appliance_enabled: false
+azimuth_caas_repo2docker_enabled: true
+azimuth_caas_workstation_ssh_enabled: false
+
+# lookup CAAS images by name
+# These images are built using cloud-image-builders - see https://github.com/stfc/cloud-image-builders/tree/main/os_builders
+azimuth_caas_workstation_image: >-
+  {{ (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', "azimuth-workstation"))[0].ID }}
+
+
+azimuth_caas_rstudio_image: >-
+  {{ (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', "azimuth-rstudio"))[0].ID }}
+
+azimuth_caas_repo2docker_image: >-
+  {{ (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', "azimuth-jupyter-repo2docker"))[0].ID }}
+
+# TODO - create slurm appliance image
+azimuth_caas_stackhpc_slurm_appliance_image: "none" 
+
+#############################################################################
+# STFC Cloud CAPI Cluster Templates
+
+# set possible capi cluster templates for azimuth capi operator
+capi_image_list:
+  - "capi-ubuntu-2204-kube-v1.31.14"
+  - "capi-ubuntu-2204-kube-v1.32.11"
+  - "capi-ubuntu-2204-kube-v1.33.7"
+  - "capi-ubuntu-2204-kube-v1.34.3"
+
+azimuth_capi_operator_cluster_templates_extra: |-
+  {
+    {% for image in capi_image_list %}
+    {% set image_id = (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', image))[0].ID | string() %}
+    {% set kube_version_dot_v = image | regex_search( 'v[0-9][.][0-9]*[.][0-9]*' ) | string() %}
+    {% set kube_version_dot = image | regex_search( '[0-9][.][0-9]*[.][0-9]*' ) | string() %}
+    {% set kube_version = kube_version_dot | replace('.', '-') | string() %}
+    "kube-{{ kube_version }}": {
+      "annotations": {{ azimuth_capi_operator_cluster_template_annotations }},
+      "spec": {{
+        azimuth_capi_operator_cluster_template_defaults |
+          combine(
+            {
+              "label": kube_version_dot_v,
+              "description": "Kubernetes " ~ kube_version_dot_v ~ " with HA control plane.",
+              "values": {
+                "kubernetesVersion": kube_version_dot,
+                "machineImageId": image_id,
+                "controlPlane": {
+                  "machineCount": azimuth_capi_operator_capi_helm_control_plane_count,
+                },
+              },
+            },
+            recursive = True
+          )
+      }},
+    },
+    {% endfor %}
+  }
+
+
+#############################################################################
+# Configuration for the seed node (HA) or single node
+
+# The CIDR of the subnet that should be created
+infra_network_cidr: 192.168.100.0/24
+# The ID of the external network to connect to via a router
+infra_external_network_id: "5283f642-8bd8-48b6-8608-fa3006ff4539"
+
+# The id of the flavor to use for the node
+# For a seed node for an HA cluster, 8GB RAM is fine (maybe even 4GB)
+# For a single node deployment, >= 16GB RAM is recommended
+infra_flavor_id: "f120e108-7883-4933-bb76-4f88909447f6" # l6.c4 (4 vCPU, ~15GB RAM, 75GB disk)
+
+# The size in GB for the data volume
+# This will hold all cluster data, including Kubernetes resources, and also PVC data
+infra_data_volume_size: 100
+
+# use a pre-existing STFC Cloud image rather than a community one
+# allows us to keep all existing cloud-init security configuration  
+infra_image_name: "ubuntu-jammy-22.04-nogui"
+infra_image_id: "{{ (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', infra_image_name ))[0].ID }}"
+
+#############################################################################
+# Configuration for Azimuth Cluster Operator
+
+# set user-defined clusters to have 5 control plane nodes
+# sacrifice compute - sacrificing compute to make etcd recovery much much easier
+azimuth_capi_operator_capi_helm_control_plane_count: 5
+
+# adding some extra capi helm values that aren't templated out as ansible variables
+azimuth_capi_operator_capi_helm_values_overrides:
+  controlPlane:
+    machineCount: "{{ azimuth_capi_operator_capi_helm_control_plane_count }}"
+  clusterNetworking:
+    internalNetwork:
+      nodeCidr: 192.168.128.0/17
+  registryMirrors:
+    docker.io:
+      - "https://dockerhub.stfc.ac.uk/v2/"
+  addons: "{{ azimuth_capi_operator_helm_addon_overrides }}"
+
+azimuth_capi_operator_capi_helm_pods_cidr: 10.0.0.0/13
+azimuth_capi_operator_capi_helm_services_cidr: 10.8.0.0/13
+
+azimuth_capi_operator_capi_helm_openstack_loadbalancer_provider: amphora
+azimuth_capi_operator_capi_helm_csi_cinder_default_availability_zone: ceph
+
+azimuth_capi_operator_capi_helm_control_plane_omit_failure_domain: true
+azimuth_capi_operator_capi_helm_worker_failure_domain:
+
+#############################################################################
+# Azimuth configuration
+
+# Indicates if the Zenith app proxy should be enabled
+azimuth_apps_enabled: true
+# Indicates if Kubernetes support should be enabled
+azimuth_kubernetes_enabled: true
+# Indicates if Cluster-as-a-Service (CaaS) should be enabled
+azimuth_clusters_enabled: true
+# The name of the current cloud
+azimuth_current_cloud_name: stfc-cloud
+# The label for the current cloud
+azimuth_current_cloud_label: STFC Cloud Azimuth Platform
+
+#############################################################################
+# Configuration of authenticators / authentication methods
+
+# Use the STFC domain for now
+azimuth_openstack_domain: stfc
+
+azimuth_openstack_auth_url: https://openstack.stfc.ac.uk:5000/v3
+
+# Whether the password authenticator should be enabled (enabled by default)
+azimuth_authenticator_password_enabled: true
+# The label for the password authenticator
+azimuth_authenticator_password_label: "Federal Login"
+
+# Whether the appcred authenticator should be enabled (not enabled by default)
+azimuth_authenticator_appcred_enabled: false
+# The label for the appcred authenticator
+azimuth_authenticator_appcred_label: "Application Credential"
+
+azimuth_authenticator_federated_enabled: true
+azimuth_authenticator_federated_identity_providers:
+  # The Keystone identity provider and protocol to use
+  # The provider is optional, and if it IS NOT given, URLs will be of the form:
+  #   <auth url>/auth/OS-FEDERATION/websso/<protocol>
+  # If a provider IS given, URLs will be of the following form:
+  #   <auth_url>/auth/OS-FEDERATION/identity_providers/<provider>/protocols/<protocol>/websso
+  # It is recommended to specify a provider if known, as it redirects straight to the IdP
+  # instead of the Keystone selection page
+  - protocol: "openid"
+    provider: "openid"
+    # A human-readable label for the identity provider, used in the selection form
+    label: "Login using IRIS-IAM"
+  - protocol: "openid"
+    provider: "ska_iam"
+    label: "Login using SKA-IAM"
+
+azimuth_documentation_url: https://stfc.github.io/cloud-azimuth-user-docs/
+
+# During Early Preview, we will link to the MoU using the support URL, 
+# and style it (below) to be an MoU button
+azimuth_support_url: https://stfc.atlassian.net/wiki/spaces/CLOUDKB/pages/1000702963/Azimuth+Memorandum+of+Understanding+MOU
+
+azimuth_theme_bootstrap_css_url: https://bootswatch.com/5/zephyr/bootstrap.css
+
+azimuth_theme_custom_css: |-
+  :root {
+    --bs-primary: #325ffc !important;
+  }
+
+  .navbar {
+    background-color: var(--bs-primary) !important;
+  }
+
+  .navbar .navbar-brand,
+  .navbar .nav-link,
+  .navbar .navbar-text {
+    color: var(--bs-light) !important;
+  }
+
+  .sticky-footer a {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+  }
+
+  .sticky-footer a::before {
+    content: '';
+    display: inline-block;
+    width: 220px;
+    height: 60px;
+    background-image: url('https://www.ukri.org/wp-content/themes/ukri/assets/img/ukri-stfc-standard-logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+  }
+
+  .sticky-footer a img {
+    height: 60px;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+
+  /* ------------------------------------------------------ */
+  /* Change "Support" button to "MoU" during early preview */
+  /* Apologies for the horrible-ness */
+  /* Hide the original icon */
+  a[href*="Azimuth+Memorandum+of+Understanding+MOU"] svg.fa-life-ring {
+      display: none !important;
+  }
+
+  /* Hide original text */
+  a[href*="Azimuth+Memorandum+of+Understanding+MOU"] {
+      font-size: 0 !important; /* Shrink original text */
+      color: transparent !important; /* Make original text invisible */
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      position: relative;
+  }
+
+  /* Inject the custom SVG as background + "MoU" label */
+  a[href*="Azimuth+Memorandum+of+Understanding+MOU"]::before {
+      content: "";
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      font-size: 1rem;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path fill="%23f8f9fa" d="M128 128C128 92.7 156.7 64 192 64L341.5 64C358.5 64 374.8 70.7 386.8 82.7L493.3 189.3C505.3 201.3 512 217.6 512 234.6L512 512C512 547.3 483.3 576 448 576L192 576C156.7 576 128 547.3 128 512L128 128zM336 122.5L336 216C336 229.3 346.7 240 360 240L453.5 240L336 122.5zM216 128C202.7 128 192 138.7 192 152C192 165.3 202.7 176 216 176L264 176C277.3 176 288 165.3 288 152C288 138.7 277.3 128 264 128L216 128zM216 224C202.7 224 192 234.7 192 248C192 261.3 202.7 272 216 272L264 272C277.3 272 288 261.3 288 248C288 234.7 277.3 224 264 224L216 224zM286.3 384C275 384 264.4 389.1 257.4 397.9L197.3 473C189 483.3 190.7 498.5 201 506.7C211.3 514.9 226.5 513.3 234.7 502.9L281.8 444.1L297 494.8C300 505 309.4 511.9 320 511.9L424 511.9C437.3 511.9 448 501.2 448 487.9C448 474.6 437.3 463.9 424 463.9L337.9 463.9L321.8 410.3C317.1 394.6 302.7 383.9 286.3 383.9z"/></svg>');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+      vertical-align: middle;
+  }
+
+  /* Add replacement label */
+  a[href*="Azimuth+Memorandum+of+Understanding+MOU"]::after {
+      content: "Memorandum of Understanding";
+      color: inherit;
+      font-size: 0.875rem;
+      vertical-align: middle;
+  }
+  /* ------------------------------------------------------ */
