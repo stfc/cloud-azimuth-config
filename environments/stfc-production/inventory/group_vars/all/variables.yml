@@ -21,15 +21,17 @@ fluent_operator_user_opensearch_port: 443
 
 fluent_operator_cluster_opensearch_logstash_prefix: "kube_logs_{{ capi_cluster_release_name }}"
 # At the time of writing, custom addons have templating disabled:
-  # https://github.com/azimuth-cloud/capi-helm-charts/blob/affae0544b07c4b2e641b3b5bf990e561c055a91/charts/cluster-addons/templates/custom-addons.yaml#L15
-  # 1. Temporarily re-enable templating with an endraw
-  # 2. Template for Openstack Project ID by base64 decoding the user info from the cloud_credentials secret
-  #    a. https://github.com/azimuth-cloud/cluster-api-addon-provider/tree/main?tab=readme-ov-file#templates
-  #    b. Note, the "cluster" and "infra_cluster" are CRD types cluster.cluster.x-k8s.io and openstackcluster.infrastructure.cluster.x-k8s.io; not clusters.azimuth.stackhpc.com
-  # 3. Template for the Kubernetes UID of the cluster object, for it to be unique to the project
-  # 4. Re-disable templating
-fluent_operator_user_opensearch_logstash_prefix: "{{ '{%- endraw %}' }}{% raw %}kube_logs_azimuth_user_cluster_{{ cluster.metadata.uid }}_projectid_{{ (cloud_identity.data[\"user_info.yaml\"] | b64decode
-    | fromyaml).project_id }}{% endraw %}{{ '{%- raw %}' }}"
+# https://github.com/azimuth-cloud/capi-helm-charts/blob/affae0544b07c4b2e641b3b5bf990e561c055a91/charts/cluster-addons/templates/custom-addons.yaml#L15
+# 1. Temporarily re-enable templating with an endraw
+# 2. Template for Openstack Project ID by base64 decoding the user info from the cloud_credentials secret
+#    a. https://github.com/azimuth-cloud/cluster-api-addon-provider/tree/main?tab=readme-ov-file#templates
+#    b. Note, the "cluster" and "infra_cluster" are CRD types cluster.cluster.x-k8s.io and openstackcluster.infrastructure.cluster.x-k8s.io; not clusters.azimuth.stackhpc.com
+# 3. Template for the Kubernetes UID of the cluster object, for it to be unique to the project
+# 4. Re-disable templating
+fluent_operator_user_opensearch_logstash_prefix: "{{ '{%- endraw %}' }}{% raw
+  %}kube_logs_azimuth_user_cluster_{{ cluster.metadata.uid }}_projectid_{{
+  (cloud_identity.data[\"user_info.yaml\"] | b64decode | fromyaml).project_id
+  }}{% endraw %}{{ '{%- raw %}' }}"
 ##################################################################################
 # Alertmanager
 capi_cluster_alertmanager_env: prod
@@ -37,8 +39,10 @@ capi_cluster_alertmanager_env: prod
 ### CAPI Cluster Overrides for Staging on Prod Openstack ###
 
 # TODO: make this find the latest image automatically
-capi_cluster_machine_image_id: "50ed1a91-ab48-46ce-a9f6-aaf3ce9d8a06"
-capi_cluster_kubernetes_version:  "v1.34.3"
+capi_cluster_machine_image_id: >-
+  { (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json |
+  selectattr('Name', '==', "capi-ubuntu-2204-kube-v1.34.6"))[0].ID }}
+capi_cluster_kubernetes_version: "v1.34.6"
 
 # Worker/Control plane node count for azimuth capi cluster
 capi_cluster_control_plane_flavor: "dep-l2.tiny"
@@ -48,7 +52,7 @@ capi_cluster_worker_flavor: "dep-l2.tiny"
 ###########################################################
 # EARLY PREVIEW PERIOD CONFIG
 
-# deny creation of any platforms on any tenancies other than those approved for early-preview period 
+# deny creation of any platforms on any tenancies other than those approved for early-preview period
 # prevents unauthorized users during early-preview period
 # limits resource usage, ensures that users have acknowledged MOU
 platforms_tenancy_allow_list:
@@ -60,5 +64,5 @@ platforms_tenancy_allow_list:
   - dd791d32051b49718d4a4b1f9e470ca9 # CCPi
   - ba477c9ce6c14c618ee7d63a7723c76c # CSE-Computational-Biology
   - 62f20920288c40efac22c88115a8b9c8 # SKA-SRC-RAL - SKA early access testing
-  - e6abd5bceade410180d38a0a8eef47cb # AKowaliw-Scratch-Space - Alex C EEP project (until 25/03/26) 
+  - e6abd5bceade410180d38a0a8eef47cb # AKowaliw-Scratch-Space - Alex C EEP project (until 25/03/26)
   - 57724e6b02c04567860c2e6206655f34 # DAaaS Training Feb 4th
