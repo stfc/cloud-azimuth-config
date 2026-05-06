@@ -1,5 +1,5 @@
 ---
-# common variables for all stfc environments - stfc-development, stfc-production, stfc-staging 
+# common variables for all stfc environments - stfc-development, stfc-production, stfc-staging
 
 #############################################################################
 # Community Images configuration
@@ -18,17 +18,22 @@ azimuth_caas_workstation_ssh_enabled: false
 # lookup CAAS images by name
 # These images are built using cloud-image-builders - see https://github.com/stfc/cloud-image-builders/tree/main/os_builders
 azimuth_caas_workstation_image: >-
-  {{ (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', "azimuth-workstation"))[0].ID }}
-
+  {{ 
+    (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', "azimuth-workstation"))[0].ID 
+  }}
 
 azimuth_caas_rstudio_image: >-
-  {{ (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', "azimuth-rstudio"))[0].ID }}
+  {{ 
+    (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', "azimuth-rstudio"))[0].ID 
+  }}
 
 azimuth_caas_repo2docker_image: >-
-  {{ (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', "azimuth-jupyter-repo2docker"))[0].ID }}
+  {{ 
+    (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', "azimuth-jupyter-repo2docker"))[0].ID 
+  }}
 
 # TODO - create slurm appliance image
-azimuth_caas_stackhpc_slurm_appliance_image: "none" 
+azimuth_caas_stackhpc_slurm_appliance_image: "none"
 
 #############################################################################
 # STFC Cloud CAPI Cluster Templates
@@ -36,9 +41,9 @@ azimuth_caas_stackhpc_slurm_appliance_image: "none"
 # set possible capi cluster templates for azimuth capi operator
 capi_image_list:
   - "capi-ubuntu-2204-kube-v1.31.14"
-  - "capi-ubuntu-2204-kube-v1.32.11"
-  - "capi-ubuntu-2204-kube-v1.33.7"
-  - "capi-ubuntu-2204-kube-v1.34.3"
+  - "capi-ubuntu-2204-kube-v1.32.13"
+  - "capi-ubuntu-2204-kube-v1.33.10"
+  - "capi-ubuntu-2204-kube-v1.34.6"
 
 azimuth_capi_operator_cluster_templates_extra: |-
   {
@@ -70,7 +75,6 @@ azimuth_capi_operator_cluster_templates_extra: |-
     {% endfor %}
   }
 
-
 #############################################################################
 # Configuration for the seed node (HA) or single node
 
@@ -89,9 +93,12 @@ infra_flavor_id: "f120e108-7883-4933-bb76-4f88909447f6" # l6.c4 (4 vCPU, ~15GB R
 infra_data_volume_size: 100
 
 # use a pre-existing STFC Cloud image rather than a community one
-# allows us to keep all existing cloud-init security configuration  
+# allows us to keep all existing cloud-init security configuration
 infra_image_name: "ubuntu-jammy-22.04-nogui"
-infra_image_id: "{{ (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', infra_image_name ))[0].ID }}"
+infra_image_id: >-
+  {{ 
+    (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json | selectattr('Name', '==', infra_image_name ))[0].ID 
+  }}
 
 #############################################################################
 # Configuration for Azimuth Cluster Operator
@@ -172,7 +179,7 @@ azimuth_authenticator_federated_identity_providers:
 
 azimuth_documentation_url: https://stfc.github.io/cloud-azimuth-user-docs/
 
-# During Early Preview, we will link to the MoU using the support URL, 
+# During Early Preview, we will link to the MoU using the support URL,
 # and style it (below) to be an MoU button
 azimuth_support_url: https://stfc.atlassian.net/wiki/spaces/CLOUDKB/pages/1000702963/Azimuth+Memorandum+of+Understanding+MOU
 
