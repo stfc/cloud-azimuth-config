@@ -36,14 +36,6 @@ fluent_operator_user_opensearch_logstash_prefix: "{{ '{%- endraw %}' }}{% raw
 # Alertmanager
 capi_cluster_alertmanager_env: prod
 
-### CAPI Cluster Overrides for Staging on Prod Openstack ###
-
-# TODO: make this find the latest image automatically
-capi_cluster_machine_image_id: >-
-  { (lookup('pipe', 'openstack image list -c Name -c ID -f json') | from_json |
-  selectattr('Name', '==', "capi-ubuntu-2204-kube-v1.34.6"))[0].ID }}
-capi_cluster_kubernetes_version: "v1.34.6"
-
 # Worker/Control plane node count for azimuth capi cluster
 capi_cluster_control_plane_flavor: "dep-l2.tiny"
 # The name of the flavor to use for worker nodes
