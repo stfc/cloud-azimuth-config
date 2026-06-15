@@ -20,3 +20,5 @@ environments/standalone/inventory/group_vars/all/secrets.yml
 
 environments/stfc-singlenode/clouds.yaml
 environments/stfc-dev/clouds.yaml
+
+.vscode/
