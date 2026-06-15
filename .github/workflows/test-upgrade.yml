@@ -6,9 +6,14 @@ permissions:
   packages: write
   id-token: write
 
-on:
+on: # yamllint disable-line rule:truthy
   # Allow to be called by other workflows
   workflow_call:
+    secrets:
+      OS_CLOUDS:
+        description: clouds.yaml file
+        required: true
+
     inputs:
       from-ref:
         description: >-
@@ -22,6 +27,7 @@ on:
 
   # Allow manual execution on any branch
   workflow_dispatch:
+    # yamllint disable-line rule:line-length
     # checkov:skip=CKV_GHA_7: "The build output cannot be affected by user parameters other than the build entry point and the top-level source location. GitHub Actions workflow_dispatch inputs MUST be empty. "
     inputs:
       target-cloud:
@@ -58,9 +64,10 @@ jobs:
     steps:
 
       - name: Checkout the initial git ref
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ inputs.from-ref }}
+          persist-credentials: false
 
       - name: Set up Azimuth environment
         uses: ./.github/actions/setup
@@ -94,14 +101,30 @@ jobs:
                 control_plane_size: "{{ generate_tests_kubernetes_test_case_control_plane_size }}"
                 worker_size: "{{ generate_tests_kubernetes_test_case_worker_size }}"
                 worker_count: "{{ generate_tests_kubernetes_test_case_worker_count }}"
-                dashboard_enabled: "{{ generate_tests_kubernetes_test_case_dashboard_enabled }}"
                 monitoring_enabled: "{{ generate_tests_kubernetes_test_case_monitoring_enabled }}"
+                loki_query: "{{ generate_tests_kubernetes_test_case_loki_query | default('{}') | to_json }}"
+                loki_limit: "{{ generate_tests_kubernetes_test_case_loki_limit | default(omit) }}"
+                loki_namespace: "{{ generate_tests_kubernetes_test_case_loki_namespace | default(omit) }}"
+                loki_service: "{{ generate_tests_kubernetes_test_case_loki_service | default(omit) }}"
+                loki_port: "{{ generate_tests_kubernetes_test_case_loki_port | default(omit) }}"
         # GitHub terminates jobs after 6 hours
         # We don't want jobs to acquire the lock then get timed out before they
         # can finish
         # So wait a maximum of 3 hours to acquire the lock, leaving 3 hours for
         # other tasks in the job
         timeout-minutes: 180
+
+      - name: Generate S3 credentials for Velero
+        run: |
+          set -e
+          source ci.env
+          source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
+          VELERO_S3_ACCESS_KEY="$(openstack ec2 credentials create -f value -c access)"
+          VELERO_S3_SECRET_KEY="$(openstack ec2 credentials show -f value -c secret "$VELERO_S3_ACCESS_KEY")"
+          cat >> ci.env <<EOF
+          export VELERO_S3_ACCESS_KEY="$VELERO_S3_ACCESS_KEY"
+          export VELERO_S3_SECRET_KEY="$VELERO_S3_SECRET_KEY"
+          EOF
 
       - name: Provision Azimuth
         uses: ./.github/actions/provision
@@ -134,11 +157,12 @@ jobs:
 
       - name: Checkout code under test
         id: checkout-latest
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           # Make sure not to remove working directories
           clean: false
           ref: ${{ inputs.to-ref }}
+          persist-credentials: false
         if: ${{ !cancelled() && steps.generate-tests.conclusion == 'success' }}
 
       - name: Install updated Python dependencies
@@ -208,7 +232,7 @@ jobs:
         if: ${{ always() }}
 
       - name: Upload test report artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: azimuth-upgrade-test-reports
           path: reports/*
@@ -223,7 +247,7 @@ jobs:
         if: ${{ always() }}
 
       - name: Upload debug bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: azimuth-upgrade-debug-bundle
           path: debug-bundle.tar.gz
@@ -231,4 +255,12 @@ jobs:
 
       - name: Destroy Azimuth
         uses: ./.github/actions/destroy
+        if: ${{ always() }}
+
+      - name: Delete Velero S3 credentials
+        run: |
+          set -e
+          source ./ci.env
+          source ./bin/activate "$AZIMUTH_CONFIG_ENVIRONMENT" "$AZIMUTH_ENVIRONMENT"
+          openstack ec2 credentials delete "$VELERO_S3_ACCESS_KEY"
         if: ${{ always() }}
