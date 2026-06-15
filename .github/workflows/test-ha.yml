@@ -8,9 +8,10 @@ permissions:
   statuses: write
   id-token: write
 
-on:
+on: # yamllint disable-line rule:truthy
   # Allow manual execution on any branch
   workflow_dispatch:
+    # yamllint disable-line rule:line-length
     # checkov:skip=CKV_GHA_7: "The build output cannot be affected by user parameters other than the build entry point and the top-level source location. GitHub Actions workflow_dispatch inputs MUST be empty. "
     inputs:
       target-cloud:
@@ -22,6 +23,11 @@ on:
           - ""
           - arcus
           - leafcloud
+      azimuth-ops-version:
+        description: >
+          The azimuth-ops version to use. If not given, the default version is used.
+        required: true
+        default: ""
 
 jobs:
   # Tests a clean HA deployment + all appliances
@@ -31,7 +37,9 @@ jobs:
       # We need to check out the code under test first in order to use local
       # actions
       - name: Checkout code under test
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Set up Azimuth environment
         uses: ./.github/actions/setup
@@ -42,6 +50,7 @@ jobs:
           target-cloud: ${{ inputs.target-cloud || vars.TARGET_CLOUD }}
           install-mode: ha
           environment-prefix: ci-ha
+          azimuth-ops-version: ${{ inputs.azimuth-ops-version }}
         # GitHub terminates jobs after 6 hours
         # We don't want jobs to acquire the lock then get timed out before
         # they can finish

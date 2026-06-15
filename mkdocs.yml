@@ -44,12 +44,16 @@ nav:
   - Debugging:
       - debugging/index.md
       - debugging/access-k3s.md
+      - debugging/recovery-of-seed.md
       - debugging/access-ha.md
       - debugging/using-k9s.md
       - debugging/access-monitoring.md
       - debugging/zenith-services.md
       - debugging/kubernetes.md
       - debugging/caas.md
+  - Architecture:
+      - architecture/index.md
+      - architecture/identity.md
   - Developing:
       - developing/index.md
   - capi-mgmt.md
@@ -75,7 +79,11 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - toc:
       toc_depth: 3
 

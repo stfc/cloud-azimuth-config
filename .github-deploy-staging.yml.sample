@@ -26,7 +26,9 @@ jobs:
           sudo apt install -y python3-venv python3-dev build-essential unzip git-crypt
 
       - name: Checkout the config repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Deploy Azimuth
         shell: bash
@@ -40,3 +42,40 @@ jobs:
           source ./bin/activate  ${{ env.azimuth-config-env-name }}
           ansible-galaxy install -fr ./requirements.yml
           ansible-playbook azimuth_cloud.azimuth_ops.provision
+
+      - name: Generate test suite
+        shell: bash
+        run: |
+          set -e
+          echo ${{ secrets.GIT_CRYPT_KEY_B64 }} | base64 -d | git-crypt unlock -
+          source ./bin/activate  ${{ env.azimuth-config-env-name }}
+          ansible-playbook azimuth_cloud.azimuth_ops.generate_tests
+
+      - name: Run test suite
+        shell: bash
+        run: |
+          set -e
+          echo ${{ secrets.GIT_CRYPT_KEY_B64 }} | base64 -d | git-crypt unlock -
+          source ./bin/activate  ${{ env.azimuth-config-env-name }}
+          export OS_CLOUD=unrestricted
+          ./bin/run-tests
+
+      - name: Upload test report artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: "test-report"
+          path: |
+            output.xml
+            log.html
+            report.html
+        if: ${{ always() }}
+
+      - name: Clean up test platforms
+        shell: bash
+        run: |
+          set -e
+          echo ${{ secrets.GIT_CRYPT_KEY_B64 }} | base64 -d | git-crypt unlock -
+          source ./bin/activate  ${{ env.azimuth-config-env-name }}
+          export OS_CLOUD=unrestricted
+          ./bin/run-tests --include delete
+        if: ${{ cancelled() }}
