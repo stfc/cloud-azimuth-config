@@ -1,5 +1,5 @@
 ---
-# common variables for all highly-available stfc environments (those running on a CAPI cluster) - stfc-production and stfc-staging 
+# common variables for all highly-available stfc environments (those running on a CAPI cluster) - stfc-production and stfc-staging
 
 #############################################################################
 # Configuration for the HA cluster
@@ -20,7 +20,7 @@ capi_cluster_control_plane_omit_failure_domain: true
 capi_cluster_worker_failure_domain:
 
 # set our own release defaults
-# copy-paste of defaults but wrapped in "openstack-cluster"  
+# copy-paste of defaults but wrapped in "openstack-cluster"
 # https://github.com/azimuth-cloud/ansible-collection-azimuth-ops/blob/main/roles/capi_cluster/defaults/main.yml
 
 capi_cluster_release_overrides:
