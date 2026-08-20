@@ -37,9 +37,9 @@ fluent_operator_user_opensearch_logstash_prefix: "{{ '{%- endraw %}' }}{% raw
 capi_cluster_alertmanager_env: prod
 
 # Worker/Control plane node count for azimuth capi cluster
-capi_cluster_control_plane_flavor: "dep-l2.tiny"
+capi_cluster_control_plane_flavor: "l6.c8"
 # The name of the flavor to use for worker nodes
-capi_cluster_worker_flavor: "dep-l2.tiny"
+capi_cluster_worker_flavor: "l6.c8"
 
 ###########################################################
 # EARLY PREVIEW PERIOD CONFIG
