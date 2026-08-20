@@ -14,9 +14,9 @@ capi_cluster_helm_addon_overrides:
         values:
           prometheus:
             prometheusSpec:
-              externalLabels:
-                cluster: azimuth
-                env: "{{ capi_cluster_alertmanager_env }}"
+                externalLabels:
+                  cluster: azimuth
+                  env: "{{ capi_cluster_alertmanager_env }}"
           alertmanager:
             config: "{{ capi_cluster_alertmanager_values }}"
   custom:
@@ -43,13 +43,3 @@ capi_cluster_helm_addon_overrides:
             stringData:
               username: "{{ capi_cluster_logging_user }}"
               password: "{{ capi_cluster_logging_pass }}"
-
-    # to be removed upon Azimuth 2026.7.x release
-    patch-cves:
-      kind: HelmRelease
-      spec:
-        namespace: kube-system
-        chart:
-          repo: https://azimuth-cloud.github.io/azimuth-charts
-          name: patch-cves
-          version: 0.11.0

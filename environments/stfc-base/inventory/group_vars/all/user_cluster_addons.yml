@@ -30,13 +30,3 @@ azimuth_capi_operator_helm_addon_overrides:
             stringData:
               username: "{{ user_cluster_logging_user }}"
               password: "{{ user_cluster_logging_pass }}"
-
-    # to be removed upon Azimuth 2026.7.x release
-    patch-cves:
-      kind: HelmRelease
-      spec:
-        namespace: kube-system
-        chart:
-          repo: https://azimuth-cloud.github.io/azimuth-charts
-          name: patch-cves
-          version: 0.11.0
