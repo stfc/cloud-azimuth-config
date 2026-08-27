@@ -1,4 +1,4 @@
-# ruff: noqa: F821
+# ruff: noqa: F821, E721
 
 SETTINGS_FILE = "./tilt-settings.yaml"
 
